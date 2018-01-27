@@ -101,10 +101,8 @@ public class SimulationParams {
 				movementDefaults.put(mt, mmt);
 			} else if(args[i].equals("-batchRun")) {
 				setBatchRun(true);
-			} else if(args[i].equals("-wait")) {
+			} else if(args[i].equals("-ptime")) {
 				setWait(true);
-			} else if(args[i].equals("-coll")) {
-				setCollShow(true);
 			} else {
 				throw new IllegalArgumentException("Invalid argument: " + args[i] + 
 						" as command line argument.");
@@ -187,6 +185,9 @@ public class SimulationParams {
 			}
 			else if(line.startsWith("useCollisions")){
 				useCollisions = (Integer.parseInt(param) == 1) ? true : false;
+				if(useCollisions) {
+					setCollShow(true);
+				}
 			}
 			else if(line.startsWith("decomposing")){
 				decomposing = (Integer.parseInt(param) == 1) ? true : false;
