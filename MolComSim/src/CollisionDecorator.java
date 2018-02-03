@@ -76,6 +76,11 @@ public abstract class CollisionDecorator implements CollisionHandler {
 				break;
 			}
 		}
+		
+		if(vsum + vin > 1) {
+			return true;
+		}
+		
 		double p = vsum + vin / (1 - vsum);
 		if(Math.random() < p) {
 			simulation.addCollisionNum(mol, nextPos, simulation);
