@@ -12,32 +12,38 @@ public class MoleculeParams {
 	private MoleculeMovementType moleculeMovementType = SimulationParams.getMovementDefault(moleculeType);
 	private int adaptiveChange = 0; // default is no adaptive change.  Amount to adjust num mols based
 									// on comm success/failure.
+	private double size = 1.0;
 
-	public MoleculeParams(MoleculeType mType, MoleculeMovementType mMovementType, int numMols, int adaptiveChange) {
+	public MoleculeParams(MoleculeType mType, MoleculeMovementType mMovementType, int numMols, int adaptiveChange, double size) {
 		this.numMolecules = numMols;
 		this.moleculeMovementType = mMovementType;
 		this.moleculeType = mType;
 		this.adaptiveChange = adaptiveChange;
+		this.size = size;
 	}
 
 	public MoleculeParams(Scanner readParams) {
 		numMolecules = readParams.nextInt();
 		moleculeType = MoleculeType.getMoleculeType(readParams.next());
-		if(readParams.hasNext()) { // could be either a movement type or an amount of adaptive change
-			if(!readParams.hasNextInt()) { // it's not an adaptive change, must be a movement type
-				moleculeMovementType = MoleculeMovementType.getMovementType(readParams.next());
-			} 
-			if(readParams.hasNextInt()) {// An adaptive change.  After movement type param if there is a movement type
-				adaptiveChange = readParams.nextInt();
-			}
+		
+		// ノイズ
+		if(readParams.hasNextDouble()) {
+			size = readParams.nextDouble();
+			return;
 		}
-//		StackTraceElement[] ste = new Throwable().getStackTrace();
-//        for (int i = 0; i < ste.length; i++) {
-//            System.out.println(ste[i]);
-//        }
-//        System.out.println(moleculeMovementType + ":" + moleculeType);
-//        System.out.println(numMolecules);
-//        System.out.println("*****************");
+		
+		moleculeMovementType = MoleculeMovementType.getMovementType(readParams.next());
+		adaptiveChange = readParams.nextInt();
+		size = readParams.nextDouble();
+		
+//		if(readParams.hasNext()) { // could be either a movement type or an amount of adaptive change
+//			if(!readParams.hasNextInt()) { // it's not an adaptive change, must be a movement type
+//				moleculeMovementType = MoleculeMovementType.getMovementType(readParams.next());
+//			} 
+//			if(readParams.hasNextInt()) {// An adaptive change.  After movement type param if there is a movement type
+//				adaptiveChange = readParams.nextInt();
+//			}
+//		}
 	}
 
 	public int getNumMolecules() {
@@ -54,6 +60,10 @@ public class MoleculeParams {
 	
 	public int getAdaptiveChange() {
 		return adaptiveChange;
+	}
+	
+	public double getSize() {
+		return size;
 	}
 	
 	// Changes the number of molecules to send out based on prior communication success or failure.

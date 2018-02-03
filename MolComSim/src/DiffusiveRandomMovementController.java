@@ -25,14 +25,17 @@ public class DiffusiveRandomMovementController extends MovementController{
 		int currentZ = currentPosition.getZ();
 		// The idea behind the getMolRandMove~ methods are that the molecule moves a random amount in one step
 		// , and that will, for each dimension, be a random amount between -getMolRandMove~ and +getMolRandMove~
-		int maxXDelta = getSimulation().getSimParams().getMolRandMoveX();
-		int maxYDelta = getSimulation().getSimParams().getMolRandMoveY();;
-		int maxZDelta = getSimulation().getSimParams().getMolRandMoveZ();;
-		int nextX = currentX + random.nextInt(1 + (2 * maxXDelta)) - maxXDelta;
-		int nextY = currentY + random.nextInt(1 + (2 * maxYDelta)) - maxYDelta;
-		int nextZ = currentZ + random.nextInt(1 + (2 * maxZDelta)) - maxZDelta;
+		double maxXDelta = getSimulation().getSimParams().getMolRandMoveX();
+		double maxYDelta = getSimulation().getSimParams().getMolRandMoveY();;
+		double maxZDelta = getSimulation().getSimParams().getMolRandMoveZ();;
+		int nextX = currentX + (int)Math.round(random.nextDouble() * (maxXDelta * 2) - maxXDelta);
+		int nextY = currentY + (int)Math.round(random.nextDouble() * (maxYDelta * 2) - maxYDelta);
+		int nextZ = currentZ + (int)Math.round(random.nextDouble() * (maxZDelta * 2) - maxZDelta);
+//		int nextX = currentX + random.nextInt(1 + (2 * (int)maxXDelta)) - (int)maxXDelta;
+//		int nextY = currentY + random.nextInt(1 + (2 * (int)maxYDelta)) - (int)maxYDelta;
+//		int nextZ = currentZ + random.nextInt(1 + (2 * (int)maxZDelta)) - (int)maxZDelta;
 		Position nextPosition = new Position(nextX, nextY, nextZ);
-		
+//		
 		//If the molecule has ACTIVE movement type, it looks for a nearby microtubule to reattach to
 		if (getMolecule().getMoleculeMovementType() == MoleculeMovementType.ACTIVE){
 			//If a microtubule is found, change molecule's collision handler and movement controller

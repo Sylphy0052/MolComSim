@@ -19,14 +19,14 @@ public class OnTubuleCollisionHandler extends CollisionDecorator{
 	 */
 	public Position handlePotentialCollisions(Molecule mol, Position nextPos, MolComSim simulation) {
 		Position nextPosition = collH.handlePotentialCollisions(mol, nextPos, simulation);
-		if (!simulation.getMedium().hasMolecule(nextPos)){
-			simulation.addCollisionNum(mol, nextPos, simulation);
-		//		if(!simulation.isOccupied(nextPosition)){
-			return nextPosition;
+		if (simulation.getMedium().hasMolecule(nextPos) & isCollision(mol, nextPos, simulation)){
+			new DiffusiveRandomMovementController(new StandardCollisionHandler(new SimpleCollisionHandler()), simulation, mol);
+			return mol.getPosition();	
 		}
 		else {
-			new DiffusiveRandomMovementController(new StandardCollisionHandler(new SimpleCollisionHandler()), simulation, mol);
-			return mol.getPosition();
+			simulation.addCollisionNum(mol, nextPos, simulation);
+			//		if(!simulation.isOccupied(nextPosition)){
+			return nextPosition;
 		}
 	}
 

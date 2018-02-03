@@ -28,9 +28,9 @@ public class SimulationParams {
 	private boolean decomposing = false;
 	private boolean useAcknowledgements = true;
 	private ArrayList<MoleculeParams> moleculeParams = new ArrayList<MoleculeParams>();
-	private int molRandMoveX = 1;
-	private int molRandMoveY = 1;
-	private int molRandMoveZ = 1;
+	private double molRandMoveX = 1;
+	private double molRandMoveY = 1;
+	private double molRandMoveZ = 1;
 	private int velRail = 1; 
 	private double probDRail = 0.0;
 	private boolean batchRun; // store single result (last simulation step used) in batch file, append to file if already there.
@@ -112,12 +112,12 @@ public class SimulationParams {
 		if(numInfoMols > 0) {
 			moleculeParams.add(
 					new MoleculeParams(
-							MoleculeType.INFO, movementDefaults.get(MoleculeType.INFO), numInfoMols, 0));
+							MoleculeType.INFO, movementDefaults.get(MoleculeType.INFO), numInfoMols, 0, 1));
 		}
 		if(numAckMols > 0) {
 			moleculeParams.add(
 					new MoleculeParams(
-							MoleculeType.ACK, movementDefaults.get(MoleculeType.ACK), numAckMols, 0));			
+							MoleculeType.ACK, movementDefaults.get(MoleculeType.ACK), numAckMols, 0, 1));			
 		}
 	}
 	
@@ -136,13 +136,13 @@ public class SimulationParams {
 			if(!line.equals(""))
 				param = line.substring(line.indexOf(" ")+1).trim();
 			if(line.startsWith("stepLengthX")){
-				molRandMoveX = Integer.parseInt(param);
+				molRandMoveX = Double.parseDouble(param);
 			}
 			else if(line.startsWith("stepLengthY")){
-				molRandMoveY = Integer.parseInt(param);
+				molRandMoveY = Double.parseDouble(param);
 			}
 			else if(line.startsWith("stepLengthZ")){
-				molRandMoveZ = Integer.parseInt(param);
+				molRandMoveZ = Double.parseDouble(param);
 			}
 			else if(line.startsWith("mediumDimensionX")){
 				mediumLength = Integer.parseInt(param);
@@ -223,12 +223,12 @@ public class SimulationParams {
 		if(getInformationMoleculeParams().isEmpty()) {
 			moleculeParams.add(
 					new MoleculeParams(
-							MoleculeType.INFO, movementDefaults.get(MoleculeType.INFO), 1, 0));
+							MoleculeType.INFO, movementDefaults.get(MoleculeType.INFO), 1, 0, 1));
 		}
 		if(useAcknowledgements && getAcknowledgmentMoleculeParams().isEmpty()) {
 			moleculeParams.add(
 					new MoleculeParams(
-							MoleculeType.ACK, movementDefaults.get(MoleculeType.ACK), 1, 0));
+							MoleculeType.ACK, movementDefaults.get(MoleculeType.ACK), 1, 0, 1));
 		}	
 	}
 
@@ -320,15 +320,15 @@ public class SimulationParams {
 		return useAcknowledgements;
 	}
 
-	public int getMolRandMoveX() {
+	public double getMolRandMoveX() {
 		return molRandMoveX;
 	}
 
-	public int getMolRandMoveY() {
+	public double getMolRandMoveY() {
 		return molRandMoveY;
 	}
 
-	public int getMolRandMoveZ() {
+	public double getMolRandMoveZ() {
 		return molRandMoveZ;
 	}
 

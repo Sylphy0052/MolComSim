@@ -27,9 +27,8 @@ public class StandardCollisionHandler extends CollisionDecorator{
 //        System.out.println("*****************");
 		Position nextPos = collH.handlePotentialCollisions(mol, nextPosition, simulation);
 //		if (simulation.getMedium().isOccupied(nextPos)){
-		if (simulation.getMedium().hasMolecule(nextPos)){
+		if (simulation.getMedium().hasMolecule(nextPos) & isCollision(mol, nextPos, simulation)){
 			// 衝突
-			simulation.addCollisionNum(mol, nextPos, simulation);
 			return mol.getPosition();
 		}
 		 simulation.moveObject(mol, mol.getPosition(), nextPos);
