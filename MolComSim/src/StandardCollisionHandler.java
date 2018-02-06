@@ -20,13 +20,14 @@ public class StandardCollisionHandler extends CollisionDecorator{
 	 *   if moving to nextPosition would result in a collision
 	 */
 	public Position handlePotentialCollisions(Molecule mol, Position nextPosition, MolComSim simulation) {
-//		StackTraceElement[] ste = new Throwable().getStackTrace();
-//        for (int i = 0; i < ste.length; i++) {
-//            System.out.println(ste[i]);
-//        }
-//        System.out.println("*****************");
 		Position nextPos = collH.handlePotentialCollisions(mol, nextPosition, simulation);
 //		if (simulation.getMedium().isOccupied(nextPos)){
+
+		Position pos = checkCollsitionNanoMachine(mol, nextPos, simulation);
+		if(pos != null) {
+			return pos;
+		}
+		
 		if (simulation.getMedium().hasMolecule(nextPos) & isCollision(mol, nextPos, simulation)){
 			// 衝突
 			return mol.getPosition();
@@ -34,5 +35,4 @@ public class StandardCollisionHandler extends CollisionDecorator{
 		 simulation.moveObject(mol, mol.getPosition(), nextPos);
 		 return nextPos;
 	}
-
 }

@@ -29,8 +29,7 @@ public class InformationMolecule extends Molecule{
 	public void move() {
 		setPosition(getMovementController().getNextPosition(this, getSimulation()));
 		NanoMachine rx = simulation.getMedium().getRxNanoMachineAtPos(getPosition());
-		if(rx != null)
-		{
+		if(rx != null) {
 			rx.receiveMolecule(this);
 		}
 	}

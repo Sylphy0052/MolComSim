@@ -38,7 +38,8 @@ public class MolComSim {
 	private int collisionNumII;
 	private int collisionNumIN;
 	private String[] MolType = {"AcknowledgementMolecule", "InformationMolecule", "NoiseMolecule"};
-
+	private int[] collNums;
+	
 	//Keeping track of messages sent and received
 	//to identify when simulation completed 
 	private int messagesCompleted;
@@ -69,16 +70,6 @@ public class MolComSim {
 	private void startSim(String[] args) throws IOException {
 		simStep = 0;
 		lastMsgCompleted = false;
-//		isFinish = false;
-//		allInfoTime = 0;
-//		allAckTime = 0;
-//		allInfoNum = 0;
-//		allAckNum = 0;
-//		collisionNumII = 0;
-//		collisionNumIA = 0;
-//		collisionNumIN = 0;
-//		collisionNumAA = 0;
-//		collisionNumAN = 0;
 		simParams = new SimulationParams(args);
 		if((simParams.getOutputFileName() != null) && (!simParams.isBatchRun())) {
 			outputFile = new FileWriter(simParams.getOutputFileName());
@@ -90,7 +81,12 @@ public class MolComSim {
 		movingMolecules = new ArrayList<Molecule>();
 		createMedium();
 		createMicrotubules(); 
-		createNanoMachines();	
+		createNanoMachines();
+
+		collNums = new int[5];
+		for(int i = 0; i < 5; i++) {
+			collNums[i] = 0;
+		}
 		// Note: it is the job of the medium and NanoMachines to create molecules
 	}
 
@@ -125,6 +121,7 @@ public class MolComSim {
 			if ((simStep >= simParams.getMaxNumSteps() || lastMsgCompleted) && !isFinish) {
 				finishSimStep = simStep;
 				isFinish = true;
+				calc_collision();
 				if(!simParams.isWait()) {
 					break;
 				}
@@ -140,6 +137,15 @@ public class MolComSim {
 		simStep--;
 //		System.out.println("finish");
 		endSim();
+	}
+	
+	public void calc_collision() {
+		collNums[0] = collisionNumAA;
+		collNums[1] = collisionNumAI;
+		collNums[2] = collisionNumAN;
+		collNums[3] = collisionNumII;
+		collNums[4] = collisionNumIN;
+//		System.out.println("A/A : " + collisionNumAA + ", A/I : " + collisionNumAI + ", A/N : " + collisionNumAN + ", I/I : " + collisionNumII + ", I/N : " + collisionNumIN);
 	}
 
 	public int getSimStep() {
@@ -324,7 +330,7 @@ public class MolComSim {
 					batchWriter.append(String.valueOf(simStep));
 				}
 				if(simParams.isCollShow()) {
-					batchWriter.append("," + collisionNumAA + "," + collisionNumAI + "," + collisionNumAN + "," + collisionNumII + "," + collisionNumIN + "\n");
+					batchWriter.append("," + collNums[0] + "," + collNums[1] + "," + collNums[2] + "," + collNums[3] + "," + collNums[4] + "\n");
 				} else {
 					batchWriter.append("\n");
 				}
@@ -357,6 +363,7 @@ public class MolComSim {
 		messagesCompleted = msgNum;
 		String completedMessage = "Completed message: " + msgNum + ", at step: " + simStep + "\n";
 		finishSimStep = simStep;
+		
 		if(msgNum >= simParams.getNumMessages()){
 			lastMsgCompleted = true;
 			completedMessage += "Last message completed.\n";
@@ -461,7 +468,6 @@ public class MolComSim {
 	
 	public void addCollisionNum(Molecule mol, Position nextPosition, MolComSim simulation) {
 		ArrayList<Object> alreadyThere = simulation.getMedium().getObjectsAtPos(nextPosition);
-		
 		if(alreadyThere == null) {
 			return;
 		}
@@ -473,22 +479,29 @@ public class MolComSim {
 				String collMolType = o.getClass().getName();
 				String types[] = {myMolType, collMolType};
 				
+//				System.out.println(myMolType + " vs " + collMolType);
+				
 				// Info,Ack,Noiseの場合だけ
 				if(Arrays.asList(MolType).contains(myMolType) && Arrays.asList(MolType).contains(collMolType)) {
 					Arrays.sort(types); // Ack -> Info -> Noise順番に
 					if(myMolType == MolType[0]) {
 						if(collMolType == MolType[0]) {
 							collisionNumAA++;
+//							System.out.println("AA");
 						} else if(collMolType == MolType[1]) {
 							collisionNumAI++;
+//							System.out.println("AI");
 						} else if(collMolType == MolType[2]) {
 							collisionNumAN++;
+//							System.out.println("AN");
 						}
 					} else if(myMolType == MolType[1]) {
 						if(collMolType == MolType[1]) {
 							collisionNumII++;
+//							System.out.println("II");
 						} else if(collMolType == MolType[2]) {
 							collisionNumIN++;
+//							System.out.println("IN");
 						}
 					}
 				}

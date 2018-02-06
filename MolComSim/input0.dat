@@ -64,15 +64,15 @@ retransmitWaitTime 1000
 ***** stepLength (independent for each direction) represents the maximum amount a molecule using diffusive motion can travel in one step.
 ***** Actual amount of travel will vary randomly, for each direction, between -stepLength and +stepLength.
 ***** Must be ints.
-stepLengthX 1
-stepLengthY 1
-stepLengthZ 1
+stepLengthX 6.06
+stepLengthY 6.06
+stepLengthZ 6.06
 
 ** moleculeParams require the number of molecules to be released each time, the type of molecule (INFO|ACK|NOISE), the movement type for
 ** non-noise molecules (PASSIVE|ACTIVE), and an optional, adaptive change number.  Adaptive change changes num mols to send out based on 
 ** comm success/failure.
-moleculeParams 10 INFO PASSIVE 0 1
-moleculeParams 10 ACK PASSIVE 0 1
+moleculeParams 100 INFO PASSIVE 0 0.04
+moleculeParams 100 ACK PASSIVE 0 0.04
 moleculeParams 0 NOISE 1
  
 *********Below parameters are for active propagation

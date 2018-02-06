@@ -127,7 +127,6 @@ public class SimulationParams {
 	   Although its values may extend over multiple lines
 	   Stores each param’s value(s) in a private field. */
 	private void readParamsFile(String fName) throws IOException{
-		
 		String line;
 		BufferedReader br = new BufferedReader(new FileReader(fName));
 		
@@ -371,7 +370,5 @@ public class SimulationParams {
 	public void setCollShow(boolean isCollShow) {
 		this.isCollShow = isCollShow;
 	}
-	
-	
 
 }
