@@ -93,215 +93,63 @@ public abstract class CollisionDecorator implements CollisionHandler {
 	
 	public Position checkCollsitionNanoMachine(Molecule mol, Position nextPos, MolComSim simulation) {
 		Position molPosition = mol.getPosition();
-		int from_x = molPosition.getX();
-		int from_y = molPosition.getY();
-		int from_z = molPosition.getZ();
-
-		int to_x = nextPos.getX();
-		int to_y = nextPos.getY();
-		int to_z = nextPos.getZ();
-
-		int diff_x = to_x - from_x;
-		int diff_y = to_y - from_y;
-		int diff_z = to_z - from_z;
-
-		Position pos = null;
 		
-		if(diff_x >=0 && diff_y >=0 && diff_z >= 0) {
-			pos = loopCheck(mol, diff_x, diff_y, diff_z, simulation, 0);
-		} else if(diff_x >= 0 && diff_y >= 0 && diff_z < 0) {
-			pos = loopCheck(mol, diff_x, diff_y, diff_z, simulation, 1);
-		} else if(diff_x >= 0 && diff_y < 0 && diff_z >= 0) {
-			pos = loopCheck(mol, diff_x, diff_y, diff_z, simulation, 2);
-		} else if(diff_x >= 0 && diff_y < 0 && diff_z < 0) {
-			pos = loopCheck(mol, diff_x, diff_y, diff_z, simulation, 3);
-		} else if(diff_x < 0 && diff_y >= 0 && diff_z >= 0) {
-			pos = loopCheck(mol, diff_x, diff_y, diff_z, simulation, 4);
-		} else if(diff_x < 0 && diff_y >= 0 && diff_z < 0) {
-			pos = loopCheck(mol, diff_x, diff_y, diff_z, simulation, 5);
-		} else if(diff_x < 0 && diff_y < 0 && diff_z >= 0) {
-			pos = loopCheck(mol, diff_x, diff_y, diff_z, simulation, 6);
-		} else if(diff_x < 0 && diff_y < 0 && diff_z < 0) {
-			pos = loopCheck(mol, diff_x, diff_y, diff_z, simulation, 7);
+		double stepLength = simulation.getSimParams().getMolRandMoveX();
+		
+		int x1 = molPosition.getX();
+		int y1 = molPosition.getY();
+		int z1 = molPosition.getZ();
+
+		int x2 = nextPos.getX();
+		int y2 = nextPos.getY();
+		int z2 = nextPos.getZ();
+		
+		int delX = (x2 - x1);
+		int delY = (y2 - y1);
+		int delZ = (z2 - z1);
+		
+		double unitLength = Math.sqrt(delX*delX + delY*delY + delZ*delZ);
+		
+//		double x = ((double)delX*stepLength/unitLength);
+//		double y = ((double)delY*stepLength/unitLength);
+//		double z = ((double)delZ*stepLength/unitLength);
+		
+		double x = ((double)delX/unitLength);
+		double y = ((double)delY/unitLength);
+		double z = ((double)delZ/unitLength);
+		
+		DoublePosition direction = new DoublePosition(x, y, z);
+		DoublePosition currentPos = direction.toDouble(molPosition);
+		
+		int count = 0;
+		while(!currentPos.toRoundInt().equals(nextPos)) {
+			count++;
+			Position tmpPos = checkIsThereNanoMachine(mol, currentPos.toInt(), simulation);
+			if(tmpPos != null) {
+				return tmpPos;
+			}
+			currentPos = currentPos.addDouble(direction);
+			if(count == (int)stepLength * 2) {
+				System.out.println("ERROR");
+				System.exit(1);
+			}
 		}
-
-		return pos;
+		return null;
 	}
-
-	private Position loopCheck(Molecule mol, int diff_x, int diff_y, int diff_z, MolComSim simulation, int type) {
-		Position pos = null;
-
-		switch(type) {
-		case 0:
-			for(int i=0; i <= diff_x; i++) {
-				for(int j=0; j <= diff_y; j++) {
-					for(int k=0; k <= diff_z; k++) {
-						Position checkPos = new Position(mol.getPosition().getX() + i, mol.getPosition().getY() + j, mol.getPosition().getZ() + k);
-            switch(mol.getClass().getName()) {
-              case "InformationMolecule":
-              if(simulation.getMedium().getRxNanoMachineAtPos(checkPos) != null) {
-                return checkPos;
-              }
-              break;
-              case "AcknowledgementMolecule":
-              if(simulation.getMedium().getTxNanoMachineAtPos(checkPos) != null) {
-                return checkPos;
-              }
-              break;
-            }
-					}
-				}
+	
+	private Position checkIsThereNanoMachine(Molecule mol, Position pos, MolComSim simulation) {
+		switch(mol.getClass().getName()) {
+		case "InformationMolecule":
+			if(simulation.getMedium().getRxNanoMachineAtPos(pos) != null) {
+				return pos;
 			}
 			break;
-		case 1:
-    for(int i=0; i <= diff_x; i++) {
-      for(int j=0; j <= diff_y; j++) {
-        for(int k=diff_z; k >= 0; k--) {
-          Position checkPos = new Position(mol.getPosition().getX() + i, mol.getPosition().getY() + j, mol.getPosition().getZ() + k);
-          switch(mol.getClass().getName()) {
-            case "InformationMolecule":
-            if(simulation.getMedium().getRxNanoMachineAtPos(checkPos) != null) {
-              return checkPos;
-            }
-            break;
-            case "AcknowledgementMolecule":
-            if(simulation.getMedium().getTxNanoMachineAtPos(checkPos) != null) {
-              return checkPos;
-            }
-            break;
-          }
-        }
-      }
-    }
+		case "AcknowledgementMolecule":
+			if(simulation.getMedium().getTxNanoMachineAtPos(pos) != null) {
+				return pos;
+			}
 			break;
-		case 2:
-    for(int i=0; i <= diff_x; i++) {
-      for(int j=diff_y; j >= 0; j--) {
-        for(int k=0; k <= diff_z; k++) {
-          Position checkPos = new Position(mol.getPosition().getX() + i, mol.getPosition().getY() + j, mol.getPosition().getZ() + k);
-          switch(mol.getClass().getName()) {
-            case "InformationMolecule":
-            if(simulation.getMedium().getRxNanoMachineAtPos(checkPos) != null) {
-              return checkPos;
-            }
-            break;
-            case "AcknowledgementMolecule":
-            if(simulation.getMedium().getTxNanoMachineAtPos(checkPos) != null) {
-              return checkPos;
-            }
-            break;
-          }
-        }
-      }
-    }
-			break;
-		case 3:
-    for(int i=0; i <= diff_x; i++) {
-      for(int j=diff_y; j >= 0; j--) {
-        for(int k=diff_z; k >= 0; k--) {
-          Position checkPos = new Position(mol.getPosition().getX() + i, mol.getPosition().getY() + j, mol.getPosition().getZ() + k);
-          switch(mol.getClass().getName()) {
-            case "InformationMolecule":
-            if(simulation.getMedium().getRxNanoMachineAtPos(checkPos) != null) {
-              return checkPos;
-            }
-            break;
-            case "AcknowledgementMolecule":
-            if(simulation.getMedium().getTxNanoMachineAtPos(checkPos) != null) {
-              return checkPos;
-            }
-            break;
-          }
-        }
-      }
-    }
-			break;
-      case 4:
-  			for(int i=diff_x; i >= 0; i++) {
-  				for(int j=0; j <= diff_y; j++) {
-  					for(int k=0; k <= diff_z; k++) {
-  						Position checkPos = new Position(mol.getPosition().getX() + i, mol.getPosition().getY() + j, mol.getPosition().getZ() + k);
-              switch(mol.getClass().getName()) {
-                case "InformationMolecule":
-                if(simulation.getMedium().getRxNanoMachineAtPos(checkPos) != null) {
-                  return checkPos;
-                }
-                break;
-                case "AcknowledgementMolecule":
-                if(simulation.getMedium().getTxNanoMachineAtPos(checkPos) != null) {
-                  return checkPos;
-                }
-                break;
-              }
-  					}
-  				}
-  			}
-  			break;
-  		case 5:
-      for(int i=diff_x; i >= 0; i++) {
-        for(int j=0; j <= diff_y; j++) {
-          for(int k=diff_z; k >= 0; k--) {
-            Position checkPos = new Position(mol.getPosition().getX() + i, mol.getPosition().getY() + j, mol.getPosition().getZ() + k);
-            switch(mol.getClass().getName()) {
-              case "InformationMolecule":
-              if(simulation.getMedium().getRxNanoMachineAtPos(checkPos) != null) {
-                return checkPos;
-              }
-              break;
-              case "AcknowledgementMolecule":
-              if(simulation.getMedium().getTxNanoMachineAtPos(checkPos) != null) {
-                return checkPos;
-              }
-              break;
-            }
-          }
-        }
-      }
-  			break;
-  		case 6:
-      for(int i=diff_x; i >= 0; i++) {
-        for(int j=diff_y; j >= 0; j--) {
-          for(int k=0; k <= diff_z; k++) {
-            Position checkPos = new Position(mol.getPosition().getX() + i, mol.getPosition().getY() + j, mol.getPosition().getZ() + k);
-            switch(mol.getClass().getName()) {
-              case "InformationMolecule":
-              if(simulation.getMedium().getRxNanoMachineAtPos(checkPos) != null) {
-                return checkPos;
-              }
-              break;
-              case "AcknowledgementMolecule":
-              if(simulation.getMedium().getTxNanoMachineAtPos(checkPos) != null) {
-                return checkPos;
-              }
-              break;
-            }
-          }
-        }
-      }
-  			break;
-  		case 7:
-      for(int i=diff_x; i >= 0; i++) {
-        for(int j=diff_y; j >= 0; j--) {
-          for(int k=diff_z; k >= 0; k--) {
-            Position checkPos = new Position(mol.getPosition().getX() + i, mol.getPosition().getY() + j, mol.getPosition().getZ() + k);
-            switch(mol.getClass().getName()) {
-              case "InformationMolecule":
-              if(simulation.getMedium().getRxNanoMachineAtPos(checkPos) != null) {
-                return checkPos;
-              }
-              break;
-              case "AcknowledgementMolecule":
-              if(simulation.getMedium().getTxNanoMachineAtPos(checkPos) != null) {
-                return checkPos;
-              }
-              break;
-            }
-          }
-        }
-      }
-  			break;
 		}
-
 		return null;
 	}
 }

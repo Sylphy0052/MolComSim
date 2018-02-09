@@ -30,10 +30,6 @@ public class MoleculeCreator {
 	//TODO: lastTransmissionStatus should be it's own enumerated type.  IT tracks whether any previous 
 	// communications were successful or not for adaptive changes.
 	public void createMolecules(int lastTransmissionStatus) { 
-//		StackTraceElement[] ste = new Throwable().getStackTrace();
-//        for (int i = 0; i < ste.length; i++) {
-//            System.out.println(ste[i]);
-//        }
 		ArrayList<Molecule> newMols = new ArrayList<Molecule>();
 		for (MoleculeParams mp : molParams){
 			MoleculeType molType = mp.getMoleculeType();

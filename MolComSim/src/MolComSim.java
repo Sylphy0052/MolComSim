@@ -116,8 +116,6 @@ public class MolComSim {
 //		for(; (simStep < simParams.getMaxNumSteps()) && (!lastMsgCompleted) && (!movingMolecules.isEmpty()); simStep++) 
 		for(; (!isFinish) || (movingMolecules.size() != 0); simStep++)
 		{
-//			System.out.println((isFinish) + ":" + movingMolecules.isEmpty());
-//			System.out.println(isFinish + ":" + movingMolecules.size());
 			if ((simStep >= simParams.getMaxNumSteps() || lastMsgCompleted) && !isFinish) {
 				finishSimStep = simStep;
 				isFinish = true;
@@ -135,7 +133,6 @@ public class MolComSim {
 			collectGarbage();
 		}
 		simStep--;
-//		System.out.println("finish");
 		endSim();
 	}
 	
@@ -145,7 +142,6 @@ public class MolComSim {
 		collNums[2] = collisionNumAN;
 		collNums[3] = collisionNumII;
 		collNums[4] = collisionNumIN;
-//		System.out.println("A/A : " + collisionNumAA + ", A/I : " + collisionNumAI + ", A/N : " + collisionNumAN + ", I/I : " + collisionNumII + ", I/N : " + collisionNumIN);
 	}
 
 	public int getSimStep() {
@@ -257,7 +253,7 @@ public class MolComSim {
 	}
 
 	//Adds microtubule to medium's grid all along its length
-	private void growMicrotubule(Microtubule tempMT){  
+	private void growMicrotubule(Microtubule tempMT){
 		//Collect all positions the microtubule occupies
 		HashSet<Position> mtPos = new HashSet<Position>();
 		Position start = tempMT.getStartPoint();
@@ -267,7 +263,7 @@ public class MolComSim {
 		DoublePosition direction = tempMT.getUnitVector();
 		DoublePosition currentPos = direction.toDouble(start);
 		//Add positions to position set, until we reach the end of the microtubule
-		while (!mtPos.contains(end)){		
+		while (!mtPos.contains(end)){	
 			mtPos.addAll(direction.add(currentPos));
 			currentPos = currentPos.addDouble(direction);
 		}

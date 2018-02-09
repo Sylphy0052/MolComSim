@@ -29,6 +29,10 @@ public class DoublePosition {
 		return new Position((int) x, (int) y, (int) z);
 	}
 	
+	public Position toRoundInt() {
+		return new Position((int)Math.round(x), (int)Math.round(y), (int)Math.round(z));
+	}
+	
 	//Find all int Positions within the direction of a double vector
 	public HashSet<Position> add(DoublePosition other){
 		HashSet<Position> poses = new HashSet<Position>();

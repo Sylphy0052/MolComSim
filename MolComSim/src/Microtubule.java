@@ -42,17 +42,21 @@ public class Microtubule {
 			int x2 = endPoint.getX(); 
 			int y2 = endPoint.getY();
 			int z2 = endPoint.getZ();
+			
 			//The difference between the start and end points for each coordinate,
 			//Defines the direction along the microtubule
 			int delX = (x2 - x1);
 			int delY = (y2 - y1);
 			int delZ = (z2 - z1);
+			
 			//Normalize the direction vector so that its length
 			//is that of the distance traveled in one time step
 			double unitLength = Math.sqrt(delX*delX + delY*delY + delZ*delZ);
+			
 			double x = ((double)delX*(double)vel/unitLength);
 			double y = ((double)delY*(double)vel/unitLength);
 			double z = ((double)delZ*(double)vel/unitLength);
+			
 			directionVector = new DoublePosition(x, y, z);
 		}
 		return directionVector;
@@ -69,17 +73,21 @@ public class Microtubule {
 		int x2 = endPoint.getX(); 
 		int y2 = endPoint.getY();
 		int z2 = endPoint.getZ();
+//		System.out.println(vel + ":" + String.valueOf(x1) + "," + String.valueOf(y1) + "," + String.valueOf(z1) + ":" + String.valueOf(x2) + "," + String.valueOf(y2) + "," + String.valueOf(z2));
 		//The difference between the start and end points for each coordinate,
 		//Defines the direction along the microtubule
 		int delX = (x2 - x1);
 		int delY = (y2 - y1);
 		int delZ = (z2 - z1);
+//		System.out.println(delX + "," + delY + "," + delZ);
 		//Normalize the direction vector so that its length
 		//is that of the distance traveled in one time step
 		double unitLength = Math.sqrt(delX*delX + delY*delY + delZ*delZ);
+//		System.out.println(unitLength);
 		double x = ((double)delX/unitLength);
 		double y = ((double)delY/unitLength);
 		double z = ((double)delZ/unitLength);
+//		System.out.println(x + "," + y + "," + z);
 		unitVector = new DoublePosition(x, y, z);
 		return unitVector;
 	}

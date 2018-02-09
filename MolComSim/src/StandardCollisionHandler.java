@@ -22,7 +22,7 @@ public class StandardCollisionHandler extends CollisionDecorator{
 	public Position handlePotentialCollisions(Molecule mol, Position nextPosition, MolComSim simulation) {
 		Position nextPos = collH.handlePotentialCollisions(mol, nextPosition, simulation);
 //		if (simulation.getMedium().isOccupied(nextPos)){
-
+		
 		Position pos = checkCollsitionNanoMachine(mol, nextPos, simulation);
 		if(pos != null) {
 			return pos;
