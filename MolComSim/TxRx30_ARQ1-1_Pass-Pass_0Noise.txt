@@ -1,5 +1,0 @@
-Completed message: 1, at step: 91928
-Last message completed.
-Ending simulation: Last step: 91929,InfoAvgTime: 567111.6666666666,AckAvgTime: 457525.6666666667
-A/A : 1, A/I : 6, A/N : 0, I/I : 2, I/N : 0
-All 1 messages completed.

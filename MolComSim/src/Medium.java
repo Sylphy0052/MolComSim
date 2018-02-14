@@ -15,6 +15,7 @@ public class Medium {
 	private MolComSim simulation;
 	//Keep track of the location of all objects in the medium
 	private HashMap<Position, ArrayList<Object>> grid;
+//	private HashMap<Position, Double> vGrid;
 	//garbageSpot is located outside of the bounds of the medium, where molecules go to die
 	private final Position garbageSpot;
 
@@ -25,6 +26,7 @@ public class Medium {
 		this.simulation = sim;
 		this.mCreator = new NoiseMoleculeCreator(noiseMoleculeParams, this.simulation);
 		this.grid = new HashMap<Position, ArrayList<Object>>();
+//		this.vGrid = new HashMap<Position, Double>();
 		garbageSpot = new Position(length*2, height*2, width*2);
 		grid.put(garbageSpot, new ArrayList<Object>());
 	}
@@ -89,6 +91,15 @@ public class Medium {
 			grid.put(pos, new ArrayList<Object>());
 		}
 		grid.get(pos).add(obj);
+//		if (obj instanceof Molecule) {
+//			double v = 0.0;
+//			try {
+//				v = vGrid.get(pos) + ((Molecule) obj).getVolume();
+//			} catch(NullPointerException e) {
+//				v = ((Molecule) obj).getVolume();
+//			}
+//			vGrid.put(pos, v);
+//		}
 	}
 	
 	//Move an object from its old location in the grid to the new position
@@ -99,6 +110,11 @@ public class Medium {
 				grid.remove(oldPos);
 			}
 		addObject(obj, newPos);
+//		if (obj instanceof Molecule) {
+//			double v = ((Molecule) obj).getVolume();
+//			vGrid.put(oldPos, vGrid.get(oldPos) - v);
+//			vGrid.put(newPos, vGrid.get(newPos) + v);
+//		}
 	}
 	
 	//Checks to see if a particular position already has anything in it
@@ -140,6 +156,14 @@ public class Medium {
 		else 
 			return null;
 	}
+	
+//	public double getVolumeAtPos(Position pos) {
+//		try {
+//			return vGrid.get(pos);
+//		} catch(NullPointerException e) {
+//			return 0.0;
+//		}
+//	}
 	
 	public Position garbageSpot(){
 		return garbageSpot;

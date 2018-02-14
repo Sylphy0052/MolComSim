@@ -12,15 +12,15 @@ public class InformationMolecule extends Molecule{
 	//Where molecule started from
 	private NanoMachine source;
 
-	public InformationMolecule(MovementController mc, Position psn, MolComSim sim, NanoMachine src, int msgNum, MoleculeMovementType molMvType) {
-		super(mc, psn, sim, molMvType);
+	public InformationMolecule(MovementController mc, Position psn, MolComSim sim, NanoMachine src, int msgNum, MoleculeMovementType molMvType, double volume) {
+		super(mc, psn, sim, molMvType, volume);
 		this.source = src;
 		this.msgId = msgNum; 
 		this.destinations = sim.getReceivers();
 	}
 	
-	public InformationMolecule(Position psn, MolComSim sim, NanoMachine src, int msgNum, MoleculeMovementType molMvType) {
-		super(psn, sim, molMvType);
+	public InformationMolecule(Position psn, MolComSim sim, NanoMachine src, int msgNum, MoleculeMovementType molMvType, double volume) {
+		super(psn, sim, molMvType, volume);
 		this.source = src; 
 		this.msgId = msgNum; 
 		this.destinations = sim.getReceivers();

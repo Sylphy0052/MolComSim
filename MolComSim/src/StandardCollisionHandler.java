@@ -28,7 +28,7 @@ public class StandardCollisionHandler extends CollisionDecorator{
 			return pos;
 		}
 		
-		if (simulation.getMedium().hasMolecule(nextPos) & isCollision(mol, nextPos, simulation)){
+		if (simulation.getMedium().hasMolecule(nextPos) && isCollision(mol, nextPos, simulation)){
 			// 衝突
 			return mol.getPosition();
 		}

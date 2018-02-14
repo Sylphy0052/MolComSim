@@ -40,6 +40,9 @@ public class MolComSim {
 	private String[] MolType = {"AcknowledgementMolecule", "InformationMolecule", "NoiseMolecule"};
 	private int[] collNums;
 	
+	// 再送信回数
+	private int retransmitNum;
+	
 	//Keeping track of messages sent and received
 	//to identify when simulation completed 
 	private int messagesCompleted;
@@ -114,8 +117,11 @@ public class MolComSim {
 //		for(; (simStep < simParams.getMaxNumSteps()) && (!lastMsgCompleted); simStep++)
 		// ToDo: 情報分子と確認応答分子が全てなくなるまで実行
 //		for(; (simStep < simParams.getMaxNumSteps()) && (!lastMsgCompleted) && (!movingMolecules.isEmpty()); simStep++) 
-		for(; (!isFinish) || (movingMolecules.size() != 0); simStep++)
-		{
+		for(; (!isFinish) || (movingMolecules.size() != 0); simStep++) {
+			if(simStep % 10000 == 9999) {
+				System.out.println(simStep+1);
+				System.out.println(movingMolecules.size());
+			}
 			if ((simStep >= simParams.getMaxNumSteps() || lastMsgCompleted) && !isFinish) {
 				finishSimStep = simStep;
 				isFinish = true;
@@ -285,17 +291,15 @@ public class MolComSim {
 	private void endSim() throws IOException {
 		String endMessage = "";
 		if(simParams.isWait()) {
-			endMessage = "Ending simulation: Last step: " + finishSimStep + ",InfoAvgTime: " + calculateInfoTimeAverage() + ",AckAvgTime: " + calculateAckTimeAverage() + "\n";
+			endMessage = "Ending simulation: Last step: " + finishSimStep + " RetransmitNum: " + retransmitNum + "\n";
 		} else {
-			endMessage = "Ending simulation: Last step: " + simStep + "\n";
+			endMessage = "Ending simulation: Last step: " + simStep + " RetransmitNum: " + retransmitNum + "\n";
 		}
 		
 		if(simParams.isCollShow()) {
 			endMessage += "A/A : " + collisionNumAA + ", A/I : " + collisionNumAI + ", A/N : " + collisionNumAN + ", I/I : " + collisionNumII + ", I/N : " + collisionNumIN + "\n";
 		}
-				
-//		System.out.println(allInfoTime + " : " + allAckTime + " : " + allInfoNum + " : " + allAckNum);
-//		System.out.println(finishSimStep + " : " + simStep);
+		
 		if(messagesCompleted < simParams.getNumMessages()){
 			endMessage += "Total messages completed: " + messagesCompleted + 
 					" out of " + simParams.getNumMessages() + "\n";
@@ -321,20 +325,15 @@ public class MolComSim {
 			FileWriter batchWriter = new FileWriter("batch_" + simParams.getOutputFileName(), APPEND_TO_FILE);
 			if(batchWriter != null) {
 				if(simParams.isWait()) {
-					batchWriter.append(finishSimStep + "," + allInfoTime + "," + allInfoNum + "," + allAckTime + "," + allAckNum);
+					batchWriter.append(finishSimStep + "," + retransmitNum + "," + allInfoTime + "," + allInfoNum + "," + allAckTime + "," + allAckNum);
 				} else {
-					batchWriter.append(String.valueOf(simStep));
+					batchWriter.append(String.valueOf(simStep) + "," + retransmitNum);
 				}
 				if(simParams.isCollShow()) {
 					batchWriter.append("," + collNums[0] + "," + collNums[1] + "," + collNums[2] + "," + collNums[3] + "," + collNums[4] + "\n");
 				} else {
 					batchWriter.append("\n");
 				}
-//				batchWriter.append(simStep + "\n");
-//				batchWriter.append(simStep + ","+ calculateInfoTimeAverage() + "," + calculateAckTimeAverage() + "\n");
-				
-//				System.out.println(simStep + ","+ calculateInfoTimeAverage() + "," + calculateAckTimeAverage() + "\n");
-//				System.out.println(simStep);
 				batchWriter.close();
 			}
 		}
@@ -460,6 +459,10 @@ public class MolComSim {
 	
 	public FileWriter getOutputFile() {
 		return outputFile;
+	}
+	
+	public void addRetransmitNum() {
+		retransmitNum++;
 	}
 	
 	public void addCollisionNum(Molecule mol, Position nextPosition, MolComSim simulation) {

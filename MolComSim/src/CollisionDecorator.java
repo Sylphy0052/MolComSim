@@ -89,6 +89,25 @@ public abstract class CollisionDecorator implements CollisionHandler {
 			return true;
 		}
 		return false;
+//		double vsum = simulation.getMedium().getVolumeAtPos(nextPos);
+//		double vin = mol.getVolume();
+//		
+//		if(vsum == 0) {
+//			return false;
+//		}
+//		
+//		if(vsum + vin > 1) {
+//			simulation.addCollisionNum(mol, nextPos, simulation);
+//			return true;
+//		}
+//	
+//		double p = vsum + vin / (1 - vsum);
+//	
+//		if(Math.random() < (1.0 - p)) {
+//			simulation.addCollisionNum(mol, nextPos, simulation);
+//			return true;
+//		}
+//		return false;
 	}
 	
 	public Position checkCollsitionNanoMachine(Molecule mol, Position nextPos, MolComSim simulation) {

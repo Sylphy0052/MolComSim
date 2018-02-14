@@ -5,13 +5,13 @@
  */
 public class NoiseMolecule extends Molecule{
 
-	public NoiseMolecule(MovementController mc, Position psn, MolComSim sim, MoleculeMovementType molMvType) {
-		super(mc, psn, sim, molMvType);
+	public NoiseMolecule(MovementController mc, Position psn, MolComSim sim, MoleculeMovementType molMvType, double volume) {
+		super(mc, psn, sim, molMvType, volume);
 		msgId = null;
 	}
 	
-	public NoiseMolecule(Position psn, MolComSim sim, MoleculeMovementType molMvType) {
-		super(psn, sim, molMvType);
+	public NoiseMolecule(Position psn, MolComSim sim, MoleculeMovementType molMvType, double volume) {
+		super(psn, sim, molMvType, volume);
 		msgId = null;
 	}
 

@@ -18,6 +18,7 @@ public class NoiseMoleculeCreator extends MoleculeCreator{
 		ArrayList<Molecule> noiseMolecules = new ArrayList<Molecule>();
 		//TODO: check these values to make sure they're not occupied
 		for (MoleculeParams nmp : molParams){
+			double volume = Math.pow(nmp.getSize(), 3);
 			for (int i = 0; i < nmp.getNumMolecules(); i++){
 				int mh = simulation.getSimParams().getMediumHeight();
 				int ml = simulation.getSimParams().getMediumLength();
@@ -26,7 +27,7 @@ public class NoiseMoleculeCreator extends MoleculeCreator{
 				int y = (int)((Math.random()*mh) - (mh / 2));
 				int z = (int)((Math.random()*mw) - (mw / 2));
 				Position randomPos = new Position(x, y, z);
-				NoiseMolecule tempmol = new NoiseMolecule(randomPos, simulation, nmp.getMoleculeMovementType());
+				NoiseMolecule tempmol = new NoiseMolecule(randomPos, simulation, nmp.getMoleculeMovementType(), volume);
 				new NullMovementController(new SimpleCollisionHandler(), simulation, tempmol);
 				noiseMolecules.add(tempmol);
 			}

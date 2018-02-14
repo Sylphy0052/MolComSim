@@ -9,14 +9,14 @@ public class AcknowledgementMolecule extends Molecule{
 
 	private NanoMachine source; 
 
-	public AcknowledgementMolecule(MovementController mc, Position psn, MolComSim sim, NanoMachine src, int msgNum, MoleculeMovementType molMvType) {
-		super(mc, psn, sim, molMvType);
+	public AcknowledgementMolecule(MovementController mc, Position psn, MolComSim sim, NanoMachine src, int msgNum, MoleculeMovementType molMvType, double volume) {
+		super(mc, psn, sim, molMvType, volume);
 		source = src;
 		msgId = msgNum; 
 	}
 	
-	public AcknowledgementMolecule(Position psn, MolComSim sim, NanoMachine src, int msgNum, MoleculeMovementType molMvType) {
-		super(psn, sim, molMvType);
+	public AcknowledgementMolecule(Position psn, MolComSim sim, NanoMachine src, int msgNum, MoleculeMovementType molMvType, double volume) {
+		super(psn, sim, molMvType, volume);
 		source = src;
 		msgId = msgNum; 
 	}

@@ -211,6 +211,8 @@ public class NanoMachine {
 				if(simulation.isUsingAcknowledgements()) {
 					lastCommunicationStatus = LAST_COMMUNICATION_FAILURE;
 					if(retransmissionsLeft-- > 0) {
+//						System.out.println("Retransmit INFO");
+						simulation.addRetransmitNum();
 						createMolecules();
 					} 
 				} else { // time to send out new molecules, not using acknowledgements,
@@ -345,6 +347,8 @@ public class NanoMachine {
 			} else if(simulation.isUsingAcknowledgements() && !neverReceivedAnyInfoMols && 
 			((countdown-- <= 0) && (retransmissionsLeft-- > 0))){
 				lastCommunicationStatus = LAST_COMMUNICATION_FAILURE;
+//				System.out.println("Retransmit Ack");
+				simulation.addRetransmitNum();
 				createMolecules();
 			} 
 		}

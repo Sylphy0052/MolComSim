@@ -35,15 +35,6 @@ public class MoleculeParams {
 		moleculeMovementType = MoleculeMovementType.getMovementType(readParams.next());
 		adaptiveChange = readParams.nextInt();
 		size = readParams.nextDouble();
-		
-//		if(readParams.hasNext()) { // could be either a movement type or an amount of adaptive change
-//			if(!readParams.hasNextInt()) { // it's not an adaptive change, must be a movement type
-//				moleculeMovementType = MoleculeMovementType.getMovementType(readParams.next());
-//			} 
-//			if(readParams.hasNextInt()) {// An adaptive change.  After movement type param if there is a movement type
-//				adaptiveChange = readParams.nextInt();
-//			}
-//		}
 	}
 
 	public int getNumMolecules() {

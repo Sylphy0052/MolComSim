@@ -1,0 +1,11 @@
+Completed message: 1, at step: 2455
+Last message completed.
+Completed message: 2, at step: 4195
+Last message completed.
+Completed message: 3, at step: 5110
+Last message completed.
+Completed message: 4, at step: 14659
+Last message completed.
+Ending simulation: Last step: 14659 RetransmitNum: 0
+A/A : 2589, A/I : 1054, A/N : 0, I/I : 1211, I/N : 0
+All 1 messages completed.
