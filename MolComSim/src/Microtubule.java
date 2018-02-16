@@ -66,7 +66,7 @@ public class Microtubule {
 	// from MinusEndPoint to PlusEndPoint of size 1 (the unit vector)
 	public DoublePosition getUnitVector(){
 		DoublePosition unitVector;
-		int vel = simulation.getSimParams().getVelRail();
+//		int vel = simulation.getSimParams().getVelRail();
 		int x1 = startPoint.getX();
 		int y1 = startPoint.getY();
 		int z1 = startPoint.getZ();

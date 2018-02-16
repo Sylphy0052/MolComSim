@@ -34,24 +34,21 @@ public class MoleculeCreator {
 		for (MoleculeParams mp : molParams){
 			MoleculeType molType = mp.getMoleculeType();
 			MoleculeMovementType molMoveType = mp.getMoleculeMovementType();
-			double volume = Math.pow(mp.getSize(), 3);
 			mp.applyAdaptiveChange(lastTransmissionStatus); // make changes to num molecules based on communication success.
 			for (int i = 0; i < mp.getNumMolecules(); i++){
 				Molecule tempMol;
 				if (molType.equals(MoleculeType.ACK)){
-					tempMol = new AcknowledgementMolecule(position, simulation, source, source.getReceiverMessageId(),molMoveType, volume);
+					tempMol = new AcknowledgementMolecule(position, simulation, source, source.getReceiverMessageId(),molMoveType, mp.getVolume());
 					tempMol.setStartTime(simulation.getSimStep());
 					simulation.addInfoNum();
-//					System.out.println("Create Ack Mol");
 				}
 				else if (molType.equals(MoleculeType.INFO)){
-					tempMol = new InformationMolecule(position, simulation, source, source.getTransmitterMessageId(), molMoveType, volume);
+					tempMol = new InformationMolecule(position, simulation, source, source.getTransmitterMessageId(), molMoveType, mp.getVolume());
 					tempMol.setStartTime(simulation.getSimStep());
 					simulation.addAckNum();
-//					System.out.println("Create Info Mol");
 				}
 				else if (molType.equals(MoleculeType.NOISE)){
-					tempMol = new NoiseMolecule(position, simulation, molMoveType, volume);
+					tempMol = new NoiseMolecule(position, simulation, molMoveType, mp.getVolume());
 				}
 				else {
 					//TODO: Error management?

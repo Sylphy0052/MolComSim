@@ -13,6 +13,7 @@ public class MoleculeParams {
 	private int adaptiveChange = 0; // default is no adaptive change.  Amount to adjust num mols based
 									// on comm success/failure.
 	private double size = 1.0;
+	private double volume = 1.0;
 
 	public MoleculeParams(MoleculeType mType, MoleculeMovementType mMovementType, int numMols, int adaptiveChange, double size) {
 		this.numMolecules = numMols;
@@ -20,6 +21,7 @@ public class MoleculeParams {
 		this.moleculeType = mType;
 		this.adaptiveChange = adaptiveChange;
 		this.size = size;
+		this.volume = Math.pow(this.size, 3);
 	}
 
 	public MoleculeParams(Scanner readParams) {
@@ -29,12 +31,14 @@ public class MoleculeParams {
 		// ノイズ
 		if(readParams.hasNextDouble()) {
 			size = readParams.nextDouble();
+			volume = Math.pow(size, 3);
 			return;
 		}
 		
 		moleculeMovementType = MoleculeMovementType.getMovementType(readParams.next());
 		adaptiveChange = readParams.nextInt();
 		size = readParams.nextDouble();
+		volume = Math.pow(size, 3);
 	}
 
 	public int getNumMolecules() {
@@ -55,6 +59,10 @@ public class MoleculeParams {
 	
 	public double getSize() {
 		return size;
+	}
+	
+	public double getVolume() {
+		return volume;
 	}
 	
 	// Changes the number of molecules to send out based on prior communication success or failure.

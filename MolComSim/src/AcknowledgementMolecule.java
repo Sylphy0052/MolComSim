@@ -3,7 +3,6 @@
  * that is sent out by a Receiver NanoMachine
  */
 
-import java.util.*;
 
 public class AcknowledgementMolecule extends Molecule{
 

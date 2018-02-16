@@ -1,6 +1,4 @@
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Random;
 
 /**
  * CollisionDecorator uses the Decorator design pattern
@@ -11,7 +9,6 @@ import java.util.Random;
 public abstract class CollisionDecorator implements CollisionHandler {
 	
 	protected CollisionHandler collH;
-	private static Random random = new Random();
 	
 	public CollisionDecorator(CollisionHandler cH){
 		collH = cH;
@@ -22,92 +19,28 @@ public abstract class CollisionDecorator implements CollisionHandler {
 	}
 	
 	public boolean isCollision(Molecule mol, Position nextPos, MolComSim simulation) {
+		double vin = mol.getVolume();
+		double vsum = 0.0;
 		ArrayList<Object> alreadyThere = simulation.getMedium().getObjectsAtPos(nextPos);
 		
-		if(alreadyThere == null) {
-			return false;
-		}
-		
-		double vsum = 0.0;
-		double vin = 0.0;
-		
-		double vinfo = 1.0;
-		double vack = 1.0;
-		double vnoise = 1.0;
-		
-		
-		for(MoleculeParams molParams: simulation.getSimParams().getAllMoleculeParams()) {
-			switch(molParams.getMoleculeType()) {
-			case INFO:
-				double infoSize = molParams.getSize();
-				vinfo = Math.pow(infoSize, 3);
-				break;
-			case ACK:
-				double ackSize = molParams.getSize();
-				vack = Math.pow(ackSize, 3);
-				break;
-			case NOISE:
-				double noiseSize = molParams.getSize();
-				vnoise = Math.pow(noiseSize, 3);
-				break;
+		for(Object o: alreadyThere) {
+			if(o instanceof Molecule) {
+				vsum += ((Molecule) o).getVolume();
 			}
 		}
 		
-		switch(mol.getClass().getName()) {
-		case "InformationMolecule":
-			vin = vinfo;
-			break;
-		case "AcknowledgementMolecule":
-			vin = vack;
-			break;
-		}
-		
-		for(Object o : alreadyThere) {
-			String objectName = o.getClass().getName();
-			switch(objectName) {
-			case "InformationMolecule":
-				vsum += vinfo;
-				break;
-			case "AcknowledgementMolecule":
-				vsum += vack;
-				break;
-			case "NoiseMolecule":
-				vsum += vnoise;
-				break;
-			}
-		}
-		
-		if(vsum + vin >= 1) {
+		if(vsum >= 1) {
 			simulation.addCollisionNum(mol, nextPos, simulation);
 			return true;
 		}
 		
 		double p = vsum + vin / (1 - vsum);
 		
-		if(Math.random() < (1.0 - p)) {
+		if(Math.random() < p) {
 			simulation.addCollisionNum(mol, nextPos, simulation);
 			return true;
 		}
 		return false;
-//		double vsum = simulation.getMedium().getVolumeAtPos(nextPos);
-//		double vin = mol.getVolume();
-//		
-//		if(vsum == 0) {
-//			return false;
-//		}
-//		
-//		if(vsum + vin > 1) {
-//			simulation.addCollisionNum(mol, nextPos, simulation);
-//			return true;
-//		}
-//	
-//		double p = vsum + vin / (1 - vsum);
-//	
-//		if(Math.random() < (1.0 - p)) {
-//			simulation.addCollisionNum(mol, nextPos, simulation);
-//			return true;
-//		}
-//		return false;
 	}
 	
 	public Position checkCollsitionNanoMachine(Molecule mol, Position nextPos, MolComSim simulation) {
@@ -128,10 +61,6 @@ public abstract class CollisionDecorator implements CollisionHandler {
 		int delZ = (z2 - z1);
 		
 		double unitLength = Math.sqrt(delX*delX + delY*delY + delZ*delZ);
-		
-//		double x = ((double)delX*stepLength/unitLength);
-//		double y = ((double)delY*stepLength/unitLength);
-//		double z = ((double)delZ*stepLength/unitLength);
 		
 		double x = ((double)delX/unitLength);
 		double y = ((double)delY/unitLength);

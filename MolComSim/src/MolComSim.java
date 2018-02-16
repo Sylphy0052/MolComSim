@@ -5,7 +5,7 @@ import java.util.*;
 public class MolComSim {
 
 	//Parameters for this simulation instance and a reader for it
-	private FileReader paramsFile;
+//	private FileReader paramsFile;
 	private SimulationParams simParams;
 	private FileWriter outputFile = null;
 	private static final boolean APPEND_TO_FILE = true; // used to set the append field for FileWriter to write out to the
@@ -47,7 +47,7 @@ public class MolComSim {
 	//to identify when simulation completed 
 	private int messagesCompleted;
 	private boolean lastMsgCompleted;
-	private int numMessages;
+//	private int numMessages;
 	
 	//This instance of the Molecular Communication Simulation
 	static MolComSim molComSim;
@@ -61,8 +61,10 @@ public class MolComSim {
 	 * 
 	 */
 	public static void main(String[] args) throws IOException {
+		long start = System.currentTimeMillis();
 		MolComSim molComSim = createInstance();
 		molComSim.run(args);
+		System.out.println(String.format("Finish: %d ms", System.currentTimeMillis() - start));
 	}
 
 	/** Begins simulation with the parameter arguments
@@ -117,11 +119,8 @@ public class MolComSim {
 //		for(; (simStep < simParams.getMaxNumSteps()) && (!lastMsgCompleted); simStep++)
 		// ToDo: 情報分子と確認応答分子が全てなくなるまで実行
 //		for(; (simStep < simParams.getMaxNumSteps()) && (!lastMsgCompleted) && (!movingMolecules.isEmpty()); simStep++) 
+		long start = System.currentTimeMillis();
 		for(; (!isFinish) || (movingMolecules.size() != 0); simStep++) {
-			if(simStep % 10000 == 9999) {
-				System.out.println(simStep+1);
-				System.out.println(movingMolecules.size());
-			}
 			if ((simStep >= simParams.getMaxNumSteps() || lastMsgCompleted) && !isFinish) {
 				finishSimStep = simStep;
 				isFinish = true;
@@ -130,9 +129,16 @@ public class MolComSim {
 					break;
 				}
 			}
+			
+			if(simStep % 10000 == 9999) {
+				System.out.println(String.format("%d: %d ms", simStep + 1, System.currentTimeMillis() - start));
+				start = System.currentTimeMillis();
+			}
+			
 			for(NanoMachine nm : nanoMachines){
 				nm.nextStep();
 			}
+			
 			for(Molecule m : movingMolecules){
 				m.move();
 			}
@@ -275,16 +281,6 @@ public class MolComSim {
 		}
 		//Add microtubule and its positions to the grid
 		addObjects(tempMT, mtPos);
-	}
-	
-	private double calculateInfoTimeAverage() {
-		allInfoTime += 1;
-		return (double)allInfoTime / allInfoNum;
-	}
-	
-	private double calculateAckTimeAverage() {
-		allAckTime += 1;
-		return (double)allAckTime / allAckNum;
 	}
 
 	//any cleanup tasks, including printing simulation results to monitor or file.
