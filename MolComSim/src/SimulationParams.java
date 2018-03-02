@@ -36,6 +36,7 @@ public class SimulationParams {
 	private boolean batchRun; // store single result (last simulation step used) in batch file, append to file if already there.
 	private boolean isWait;
 	private boolean isCollShow;
+	private boolean isAdjust;
 	
 	private static final int ARQ_CODE_LENGTH = 2;
 	// movement defaults to be used if movement type not specified in the params file.
@@ -81,6 +82,7 @@ public class SimulationParams {
 	paramsFile must be set up in parseArgs, but not opened for reading.*/
 		int numInfoMols = 0;
 		int numAckMols = 0;
+		isAdjust = true;
 		
 		for(int i = 0; i < args.length; i++) {
 			if(args[i].equals("-pfile:")) {
@@ -200,11 +202,13 @@ public class SimulationParams {
 			else if(line.startsWith("probDRail")){
 				probDRail = Double.parseDouble(param);				
 			} else if (line.startsWith("moleculeParams")) {
-				moleculeParams.add(
-						new MoleculeParams(
-								new Scanner(
-										line.substring(line.indexOf(" ")))));
-
+				MoleculeParams molParam = new MoleculeParams(new Scanner(line.substring(line.indexOf(" "))));
+				if(molParam.getAdaptiveChange() == 0) {
+					if(molParam.getMoleculeType() != MoleculeType.NOISE) {
+						isAdjust = false;
+					}
+				}
+				moleculeParams.add(molParam);
 			} else if(line.startsWith("microtubuleParams")) {
 				microtubuleParams.add(
 						new MicrotubuleParams(
@@ -369,6 +373,10 @@ public class SimulationParams {
 	
 	public void setCollShow(boolean isCollShow) {
 		this.isCollShow = isCollShow;
+	}
+	
+	public boolean isAdjust() {
+		return isAdjust;
 	}
 
 }

@@ -1,7 +1,0 @@
-Completed message: 1, at step: 1111
-Last message completed.
-Completed message: 2, at step: 12525
-Last message completed.
-Ending simulation: Last step: 12525 RetransmitNum: 0
-A/A : 2965, A/I : 988, A/N : 0, I/I : 1118, I/N : 0
-All 1 messages completed.

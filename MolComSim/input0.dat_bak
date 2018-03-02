@@ -47,7 +47,7 @@ receiver (15, 0, 0) 3 (15, 0, 0)
 ************Information about Messages**************
 ***** numMessages is the maximum number of messages to be used in the simulation, when the final message is completed
 ***** the simulation will end, even if this is before the maxSimulationStep
-numMessages 5
+numMessages 1
 
 ***** If using acknowledgements numRetransmissions represents the number of times a message will be
 ***** retransmitted before giving up (for both Tx and Rx nanomachines).
@@ -57,8 +57,7 @@ numRetransmissions 0
 ***** an Rx during this time.  If they do, and they have the correct message ID, a new message is generated or the simulation ends.
 ***** If they do not have the correct message ID the current message is retransmitted and the retransmitWaitTime is reset.
 ***** If not using acknowledgements, retransmitwaitTime is simply the amount of time to wait between new message transmissions.
-** 2 * median(5322.5)
-retransmitWaitTime 10645
+retransmitWaitTime 1000
 
 *********Information about Molecules******************
 
@@ -69,12 +68,12 @@ stepLengthX 1
 stepLengthY 1
 stepLengthZ 1
 
-** moleculeParams require the number of molecules to be released each time, the type of molecule (INFO|ACK|NOISE), the movement type for
+** moleculeParams require the number of molecules to be released each time, the type of molecule (INFO|ACK|NOISE 1), the movement type for
 ** non-noise molecules (PASSIVE|ACTIVE), and an optional, adaptive change number.  Adaptive change changes num mols to send out based on
 ** comm success/failure.
-moleculeParams 20 INFO PASSIVE 1 1
-moleculeParams 20 ACK PASSIVE 1 1
-moleculeParams 0 NOISE 0
+moleculeParams 30 INFO PASSIVE 0 1
+moleculeParams 30 ACK PASSIVE 0 1
+moleculeParams 0 NOISE 1
 
 *********Below parameters are for active propagation
 ***** velrail is the number of units a molecule travels along a microtubule using active propagation in a single step.
@@ -102,8 +101,8 @@ decomposing 1
 ***** release position, but with end point at least 3 units from the Rx's molecule release position (but sitll within the volume of the Rx.
 ***** The other with start point at the Rx's molecule release position, but with end point at least 3 units from the Tx's release position
 ***** (but still within the volume of the Tx).
-***microtubuleParams (-15, 0, 0) (15, 0, 0)
-***microtubuleParams (15, 3, 3) (-15, 0, 0)
+microtubuleParams (-15, 0, 0) (15, 0, 0)
+**microtubuleParams (15, 3, 3) (-15, 0, 0)
 
 ***** Name of the file to output results to.
-outputFile TxRx30_ARQ20-20_Pass-Pass_RTO1_adjust1.txt
+outputFile TxRx30_ARQ1-1_Pass-Pass_0Noise_decomposing.txt

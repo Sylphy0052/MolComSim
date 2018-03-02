@@ -1,0 +1,5 @@
+Completed message: 1, at step: 25742
+Last message completed.
+Ending simulation: Last step: 25742 RetransmitNum: 0
+A/A : 75, A/I : 0, A/N : 0, I/I : 90, I/N : 0
+All 1 messages completed.
