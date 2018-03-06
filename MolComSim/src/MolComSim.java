@@ -41,9 +41,9 @@ public class MolComSim {
 	private int[] collNums;
 	
 	private int decomposingNum;
-	private ArrayList<Integer> adjustSteps;
 	private ArrayList<Integer> infoAdjustNum;
 	private ArrayList<Integer> ackAdjustNum;
+	private ArrayList<Integer> adjustSteps;
 	
 	// 再送信回数
 	private int retransmitNum;
@@ -139,7 +139,7 @@ public class MolComSim {
 				}
 			}
 			
-//			if(simStep % 1000 == 0) {
+//			if(simStep % 100 == 0) {
 //				stackAdjustParams();
 //			}
 			
@@ -331,51 +331,51 @@ public class MolComSim {
 			outputFile.close();
 		} else if(simParams.isBatchRun()) {		// Append batch file result to batch file:		
 			printBatchNumMolecules();
+			printBatchRetransmission();
 			FileWriter batchWriter = new FileWriter("batch_" + simParams.getOutputFileName(), APPEND_TO_FILE);
 			if(batchWriter != null) {
 				if(simParams.isWait()) {
-					batchWriter.append(finishSimStep + "," + retransmitNum + "," + allInfoTime + "," + allInfoNum + "," + allAckTime + "," + allAckNum);
+					batchWriter.append(finishSimStep + "," + allInfoTime + "," + allInfoNum + "," + allAckTime + "," + allAckNum);
 				} else {
-					batchWriter.append(String.valueOf(simStep) + "," + retransmitNum);
+					batchWriter.append(String.valueOf(simStep));
 				}
 				if(simParams.isCollShow()) {
 					batchWriter.append("," + collNums[0] + "," + collNums[1] + "," + collNums[2] + "," + collNums[3] + "," + collNums[4]);
-				} 
-				if(simParams.isDecomposing()) {
-					batchWriter.append("," + decomposingNum + "\n");
-				} else {
-					batchWriter.append("\n");
 				}
+				batchWriter.append("\n");
 				batchWriter.close();
 			}
 		}
 	}
 	
+	public void printBatchRetransmission() throws IOException {
+		FileWriter batchWriter = new FileWriter("retransmission_batch_" + simParams.getOutputFileName(), APPEND_TO_FILE);
+		if(batchWriter != null) {
+			if(simParams.isDecomposing()) {
+				batchWriter.append(retransmitNum + "," + decomposingNum + "\n");
+			} else {
+				batchWriter.append(retransmitNum + "\n");
+			}
+			batchWriter.close();
+		}
+	}
+	
 	public void printBatchNumMolecules() throws IOException {
+		stackAdjustParams();
 		FileWriter batchWriter = new FileWriter("adjust_batch_" + simParams.getOutputFileName(), APPEND_TO_FILE);
 		if(batchWriter != null) {
 			if(simParams.isAdjust()) {
 				for(int i = 0; i < adjustSteps.size() - 1; i++) {
-					batchWriter.append(infoAdjustNum.get(i) + "/" + ackAdjustNum.get(i) + ",");
+					batchWriter.append(adjustSteps.get(i) + "/" + infoAdjustNum.get(i) + "/" + ackAdjustNum.get(i) + ",");
 				}
-				batchWriter.append(infoAdjustNum.get(adjustSteps.size() - 1) + "/" + ackAdjustNum.get(adjustSteps.size() - 1) + "\n");
+				batchWriter.append(adjustSteps.get(adjustSteps.size() - 1) + "/" + infoAdjustNum.get(adjustSteps.size() - 1) + "/" + ackAdjustNum.get(adjustSteps.size() - 1) + "\n");
 			}
 			batchWriter.close();
 		}
-//		try {
-//			File file = new File("adjustNum.txt");
-//			PrintWriter pw = new PrintWriter(new BufferedWriter(new FileWriter(file)));
-//			for(int i = 0; i < adjustSteps.size(); i++) {
-//				System.out.println((i + 1) + "-" + adjustSteps.get(i) + ": " + infoAdjustNum.get(i) + "/" + ackAdjustNum.get(i));
-//				pw.println(adjustSteps.get(i) + "," + infoAdjustNum.get(i) + "," + ackAdjustNum.get(i));
-//			}
-//			pw.close();
-//		} catch(IOException e) {
-//			e.printStackTrace();
-//		}
 	}
 	
 	public void printNumMolecules() {
+		stackAdjustParams();
 		try {
 			File file = new File("adjustNum.txt");
 			PrintWriter pw = new PrintWriter(new BufferedWriter(new FileWriter(file)));
@@ -422,7 +422,7 @@ public class MolComSim {
 		messagesCompleted = msgNum;
 		String completedMessage = "Completed message: " + msgNum + ", at step: " + simStep + "\n";
 		finishSimStep = simStep;
-		stackAdjustParams();
+//		stackAdjustParams();
 		
 		if(msgNum >= simParams.getNumMessages()){
 			lastMsgCompleted = true;

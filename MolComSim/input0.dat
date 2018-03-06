@@ -51,7 +51,7 @@ numMessages 5
 
 ***** If using acknowledgements numRetransmissions represents the number of times a message will be
 ***** retransmitted before giving up (for both Tx and Rx nanomachines).
-numRetransmissions 0
+numRetransmissions 100
 
 ***** retransmitWaitTime represents the time to wait before retransmitting a message (if no ack mols reach a Tx or no Info mols reach
 ***** an Rx during this time.  If they do, and they have the correct message ID, a new message is generated or the simulation ends.
