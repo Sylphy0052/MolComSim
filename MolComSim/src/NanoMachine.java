@@ -16,6 +16,7 @@ public class NanoMachine {
 	private MolComSim simulation;
 	private Receiver rx;
 	private Transmitter tx;
+	
 	// These are to track communication status for adaptive change
 	public static final int LAST_COMMUNICATION_SUCCESS = 1;
 	public static final int LAST_COMMUNICATION_FAILURE = -1;
@@ -211,7 +212,6 @@ public class NanoMachine {
 				if(simulation.isUsingAcknowledgements()) {
 					lastCommunicationStatus = LAST_COMMUNICATION_FAILURE;
 					if(retransmissionsLeft-- > 0) {
-//						System.out.println("Retransmit INFO");
 						simulation.addRetransmitNum();
 						createMolecules();
 					} 
@@ -269,9 +269,9 @@ public class NanoMachine {
 					createMoleculesDelayed = true;  
 					retransmissionsLeft = simulation.getNumRetransmissions();
 				}
-			} else if(retransmissionsLeft-- > 0){
-				lastCommunicationStatus = LAST_COMMUNICATION_FAILURE;
-				createMoleculesDelayed = true;
+//			} else if(retransmissionsLeft-- > 0){
+//				lastCommunicationStatus = LAST_COMMUNICATION_FAILURE;
+//				createMoleculesDelayed = true;
 			}			
 			// Need to remove received molecules from the simulation.
 			simulation.moveObject(m, m.getPosition(), simulation.getMedium().garbageSpot());
@@ -347,7 +347,6 @@ public class NanoMachine {
 			} else if(simulation.isUsingAcknowledgements() && !neverReceivedAnyInfoMols && 
 			((countdown-- <= 0) && (retransmissionsLeft-- > 0))){
 				lastCommunicationStatus = LAST_COMMUNICATION_FAILURE;
-//				System.out.println("Retransmit Ack");
 				simulation.addRetransmitNum();
 				createMolecules();
 			} 
@@ -373,10 +372,9 @@ public class NanoMachine {
 				else {
 					simulation.completedMessage(currMsgId);
 				}
-			}
-			else if (simulation.isUsingAcknowledgements() && (retransmissionsLeft-- > 0)) {
-				lastCommunicationStatus = LAST_COMMUNICATION_FAILURE;
-				createMoleculesDelayed = true;
+//			} else if (simulation.isUsingAcknowledgements() && (retransmissionsLeft-- > 0)) {
+//				lastCommunicationStatus = LAST_COMMUNICATION_FAILURE;
+//				createMoleculesDelayed = true;
 			}
 			// Need to remove received molecules from the simulation.
 			simulation.moveObject(m, m.getPosition(), simulation.getMedium().garbageSpot());

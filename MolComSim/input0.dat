@@ -47,7 +47,7 @@ receiver (15, 0, 0) 3 (15, 0, 0)
 ************Information about Messages**************
 ***** numMessages is the maximum number of messages to be used in the simulation, when the final message is completed
 ***** the simulation will end, even if this is before the maxSimulationStep
-numMessages 5
+numMessages 50
 
 ***** If using acknowledgements numRetransmissions represents the number of times a message will be
 ***** retransmitted before giving up (for both Tx and Rx nanomachines).

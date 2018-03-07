@@ -35,7 +35,6 @@ public class SimulationParams {
 	private double probDRail = 0.0;
 	private boolean batchRun; // store single result (last simulation step used) in batch file, append to file if already there.
 	private boolean isWait;
-	private boolean isCollShow;
 	private boolean isAdjust;
 	
 	private static final int ARQ_CODE_LENGTH = 2;
@@ -186,9 +185,6 @@ public class SimulationParams {
 			}
 			else if(line.startsWith("useCollisions")){
 				useCollisions = (Integer.parseInt(param) == 1) ? true : false;
-				if(useCollisions) {
-					setCollShow(true);
-				}
 			}
 			else if(line.startsWith("decomposing")){
 				decomposing = (Integer.parseInt(param) == 1) ? true : false;
@@ -365,14 +361,6 @@ public class SimulationParams {
 	
 	public void setWait(boolean iswait) {
 		this.isWait = iswait;
-	}
-	
-	public boolean isCollShow() {
-		return isCollShow;
-	}
-	
-	public void setCollShow(boolean isCollShow) {
-		this.isCollShow = isCollShow;
 	}
 	
 	public boolean isAdjust() {

@@ -32,13 +32,19 @@ public class MolComSim {
 	private int allAckNum;
 	
 	// 衝突回数
-	private int collisionNumAA;
-	private int collisionNumAI;
-	private int collisionNumAN;
-	private int collisionNumII;
-	private int collisionNumIN;
+	private ArrayList<Integer> collisionAA;
+	private ArrayList<Integer> collisionAI;
+	private ArrayList<Integer> collisionAN;
+	private ArrayList<Integer> collisionII;
+	private ArrayList<Integer> collisionIN;
+	private ArrayList<Integer> collisions;
+//	private int collisionNumAA;
+//	private int collisionNumAI;
+//	private int collisionNumAN;
+//	private int collisionNumII;
+//	private int collisionNumIN;
 	private String[] MolType = {"AcknowledgementMolecule", "InformationMolecule", "NoiseMolecule"};
-	private int[] collNums;
+//	private int[] collNums;
 	
 	private int decomposingNum;
 	private ArrayList<Integer> infoAdjustNum;
@@ -46,7 +52,7 @@ public class MolComSim {
 	private ArrayList<Integer> adjustSteps;
 	
 	// 再送信回数
-	private int retransmitNum;
+	private ArrayList<Integer> retransmitNum;
 	
 	//Keeping track of messages sent and received
 	//to identify when simulation completed 
@@ -80,10 +86,7 @@ public class MolComSim {
 	private void startSim(String[] args) throws IOException {
 		simStep = 0;
 		lastMsgCompleted = false;
-		decomposingNum = 0;
-		adjustSteps = new ArrayList<Integer>();
-		infoAdjustNum = new ArrayList<Integer>();
-		ackAdjustNum = new ArrayList<Integer>();
+		initParams();
 		
 		simParams = new SimulationParams(args);
 		if((simParams.getOutputFileName() != null) && (!simParams.isBatchRun())) {
@@ -98,11 +101,22 @@ public class MolComSim {
 		createMicrotubules(); 
 		createNanoMachines();
 
-		collNums = new int[5];
-		for(int i = 0; i < 5; i++) {
-			collNums[i] = 0;
-		}
 		// Note: it is the job of the medium and NanoMachines to create molecules
+	}
+	
+	public void initParams() {
+		decomposingNum = 0;
+		retransmitNum = new ArrayList<Integer>();
+		adjustSteps = new ArrayList<Integer>();
+		infoAdjustNum = new ArrayList<Integer>();
+		ackAdjustNum = new ArrayList<Integer>();
+		
+		collisionAA = new ArrayList<Integer>();
+		collisionAI = new ArrayList<Integer>();
+		collisionAN = new ArrayList<Integer>();
+		collisionII = new ArrayList<Integer>();
+		collisionIN = new ArrayList<Integer>();
+		collisions = new ArrayList<Integer>();
 	}
 
 	/** Makes sure there is only one instance of MolComSim
@@ -133,15 +147,11 @@ public class MolComSim {
 			if ((simStep >= simParams.getMaxNumSteps() || lastMsgCompleted) && !isFinish) {
 				finishSimStep = simStep;
 				isFinish = true;
-				calc_collision();
+//				calc_collision();
 				if(!simParams.isWait()) {
 					break;
 				}
 			}
-			
-//			if(simStep % 100 == 0) {
-//				stackAdjustParams();
-//			}
 			
 			for(NanoMachine nm : nanoMachines){
 				nm.nextStep();
@@ -154,14 +164,6 @@ public class MolComSim {
 		}
 		simStep--;
 		endSim();
-	}
-	
-	public void calc_collision() {
-		collNums[0] = collisionNumAA;
-		collNums[1] = collisionNumAI;
-		collNums[2] = collisionNumAN;
-		collNums[3] = collisionNumII;
-		collNums[4] = collisionNumIN;
 	}
 
 	public int getSimStep() {
@@ -300,10 +302,6 @@ public class MolComSim {
 			endMessage = "Ending simulation: Last step: " + simStep + " RetransmitNum: " + retransmitNum + "\n";
 		}
 		
-		if(simParams.isCollShow()) {
-			endMessage += "A/A : " + collisionNumAA + ", A/I : " + collisionNumAI + ", A/N : " + collisionNumAN + ", I/I : " + collisionNumII + ", I/N : " + collisionNumIN + "\n";
-		}
-		
 		if(messagesCompleted < simParams.getNumMessages()){
 			endMessage += "Total messages completed: " + messagesCompleted + 
 					" out of " + simParams.getNumMessages() + "\n";
@@ -314,9 +312,9 @@ public class MolComSim {
 		if(!simParams.isBatchRun()) {
 			System.out.print(endMessage);
 			System.out.println("decomposing Num: " + decomposingNum);
-			if(simParams.isAdjust()) {
-				printNumMolecules();
-			}
+//			if(simParams.isAdjust()) {
+//				printNumMolecules();
+//			}
 		}
 		if((outputFile != null) && (!simParams.isBatchRun())) {
 			try {
@@ -330,32 +328,83 @@ public class MolComSim {
 		if((outputFile != null) && (!simParams.isBatchRun())) {
 			outputFile.close();
 		} else if(simParams.isBatchRun()) {		// Append batch file result to batch file:		
-			printBatchNumMolecules();
-			printBatchRetransmission();
+			if(simParams.isAdjust()) {
+				printBatchNumMolecules();
+			}
+			if(simParams.isUsingCollisions()) {
+				printBatchCollision();
+			}
+			if(simParams.getNumRetransmissions() != 0 && simParams.getRetransmitWaitTime() != 0) {
+				printBatchRetransmission();
+			}
+			if(simParams.isWait()) {
+				printBatchWait();
+			}
+			
 			FileWriter batchWriter = new FileWriter("batch_" + simParams.getOutputFileName(), APPEND_TO_FILE);
 			if(batchWriter != null) {
-				if(simParams.isWait()) {
-					batchWriter.append(finishSimStep + "," + allInfoTime + "," + allInfoNum + "," + allAckTime + "," + allAckNum);
-				} else {
-					batchWriter.append(String.valueOf(simStep));
-				}
-				if(simParams.isCollShow()) {
-					batchWriter.append("," + collNums[0] + "," + collNums[1] + "," + collNums[2] + "," + collNums[3] + "," + collNums[4]);
-				}
-				batchWriter.append("\n");
+//				if(simParams.isWait()) {
+//					batchWriter.append(finishSimStep + "," + allInfoTime + "," + allInfoNum + "," + allAckTime + "," + allAckNum);
+//				} else {
+//					batchWriter.append(String.valueOf(simStep));
+//				}
+				batchWriter.append(String.valueOf(simStep) + "\n");
 				batchWriter.close();
 			}
 		}
 	}
 	
+	public void printBatchWait() throws IOException {
+		FileWriter batchWriter = new FileWriter("ptime_batch_" + simParams.getOutputFileName(), APPEND_TO_FILE);
+		if(batchWriter != null) {
+			batchWriter.append(finishSimStep + "," + allInfoTime + "," + allInfoNum + "," + allAckTime + "," + allAckNum + "\n");
+		}
+		batchWriter.close();
+	}
+	
+	public void printBatchCollision() throws IOException {
+		FileWriter batchWriter = new FileWriter("collision_batch_" + simParams.getOutputFileName(), APPEND_TO_FILE);
+		if(batchWriter != null) {
+			ArrayList<Integer> collisionNum = calcCollisionNum();
+			if(simParams.isUsingCollisions()) {
+				String str = String.valueOf(collisions.get(0));
+				for(int i = 1; i < collisions.size(); i++) {
+					str += "/" + String.valueOf(collisions.get(i));
+				}
+				str += "," + String.valueOf(collisionNum.get(0));
+				for(int i = 1; i < collisionNum.size(); i++) {
+					str += "/" + String.valueOf(collisionNum.get(i));
+				}
+				batchWriter.append(str + "\n");
+			}
+			batchWriter.close();
+		}
+	}
+	
+	public ArrayList<Integer> calcCollisionNum() {
+		ArrayList<Integer> collisionNum = new ArrayList<Integer>();
+		collisionNum.add(collisionAA.size());
+		collisionNum.add(collisionAI.size());
+		collisionNum.add(collisionAN.size());
+		collisionNum.add(collisionII.size());
+		collisionNum.add(collisionIN.size());
+		
+		return collisionNum;
+	}
+	
 	public void printBatchRetransmission() throws IOException {
 		FileWriter batchWriter = new FileWriter("retransmission_batch_" + simParams.getOutputFileName(), APPEND_TO_FILE);
 		if(batchWriter != null) {
-			if(simParams.isDecomposing()) {
-				batchWriter.append(retransmitNum + "," + decomposingNum + "\n");
-			} else {
-				batchWriter.append(retransmitNum + "\n");
+			String str = "0";
+			if(retransmitNum.size() != 0) {
+				for(int i = 0; i < retransmitNum.size(); i++) {
+					str += "/" + String.valueOf(retransmitNum.get(i));
+				}
 			}
+			if(simParams.isDecomposing()) {
+				str += "," + String.valueOf(decomposingNum);
+			}
+			batchWriter.append(str + "\n");
 			batchWriter.close();
 		}
 	}
@@ -380,7 +429,7 @@ public class MolComSim {
 			File file = new File("adjustNum.txt");
 			PrintWriter pw = new PrintWriter(new BufferedWriter(new FileWriter(file)));
 			for(int i = 0; i < adjustSteps.size(); i++) {
-				System.out.println((i + 1) + "-" + adjustSteps.get(i) + ": " + infoAdjustNum.get(i) + "/" + ackAdjustNum.get(i));
+				System.out.println(adjustSteps.get(i) + ": " + infoAdjustNum.get(i) + "/" + ackAdjustNum.get(i));
 				pw.println(adjustSteps.get(i) + "," + infoAdjustNum.get(i) + "," + ackAdjustNum.get(i));
 			}
 			pw.close();
@@ -390,17 +439,33 @@ public class MolComSim {
 	}
 	
 	public void stackAdjustParams() {
+//		int info = 0;
+//		int ack = 0;
 		adjustSteps.add(simStep);
 		for(MoleculeParams param: simParams.getAllMoleculeParams()) {
 			switch(param.getMoleculeType()) {
 			case INFO:
+//				info = param.getNumMolecules(); 
 				infoAdjustNum.add(param.getNumMolecules());
 				break;
 			case ACK:
+//				ack = param.getNumMolecules();
 				ackAdjustNum.add(param.getNumMolecules());
+				break;
+			default:
 				break;
 			}
 		}
+//		System.out.println(simStep + ":" + info + "/" + ack);
+	}
+	
+	public void addRetransmitNum() {
+//		retransmitNum++;
+		retransmitNum.add(simStep);
+	}
+	
+	public void addDecomposingNum() {
+		decomposingNum++;
 	}
 
 	/** Add molecules to molecules list field
@@ -526,14 +591,6 @@ public class MolComSim {
 		return outputFile;
 	}
 	
-	public void addRetransmitNum() {
-		retransmitNum++;
-	}
-	
-	public void addDecomposingNum() {
-		decomposingNum++;
-	}
-	
 	public void addCollisionNum(Molecule mol, Position nextPosition, MolComSim simulation) {
 		ArrayList<Object> alreadyThere = simulation.getMedium().getObjectsAtPos(nextPosition);
 		if(alreadyThere == null) {
@@ -554,24 +611,20 @@ public class MolComSim {
 					Arrays.sort(types); // Ack -> Info -> Noise順番に
 					if(myMolType == MolType[0]) {
 						if(collMolType == MolType[0]) {
-							collisionNumAA++;
-//							System.out.println("AA");
+							collisionAA.add(simStep);
 						} else if(collMolType == MolType[1]) {
-							collisionNumAI++;
-//							System.out.println("AI");
+							collisionAI.add(simStep);
 						} else if(collMolType == MolType[2]) {
-							collisionNumAN++;
-//							System.out.println("AN");
+							collisionAN.add(simStep);
 						}
 					} else if(myMolType == MolType[1]) {
 						if(collMolType == MolType[1]) {
-							collisionNumII++;
-//							System.out.println("II");
+							collisionII.add(simStep);
 						} else if(collMolType == MolType[2]) {
-							collisionNumIN++;
-//							System.out.println("IN");
+							collisionIN.add(simStep);
 						}
 					}
+					collisions.add(simStep);
 				}
 			}
 		}
