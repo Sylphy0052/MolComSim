@@ -212,9 +212,11 @@ public class NanoMachine {
 				if(simulation.isUsingAcknowledgements()) {
 					lastCommunicationStatus = LAST_COMMUNICATION_FAILURE;
 					if(retransmissionsLeft-- > 0) {
-						simulation.addRetransmitNum();
+						simulation.addTxRetransmitNum();
 						createMolecules();
-					} 
+					} else {
+						simulation.setFailure(true);
+					}
 				} else { // time to send out new molecules, not using acknowledgements,
 					    // so start new message.
 					lastCommunicationStatus = LAST_COMMUNICATION_SUCCESS;
@@ -347,9 +349,12 @@ public class NanoMachine {
 			} else if(simulation.isUsingAcknowledgements() && !neverReceivedAnyInfoMols && 
 			((countdown-- <= 0) && (retransmissionsLeft-- > 0))){
 				lastCommunicationStatus = LAST_COMMUNICATION_FAILURE;
-				simulation.addRetransmitNum();
+				simulation.addRxRetransmitNum();
 				createMolecules();
-			} 
+			}  else if(simulation.isUsingAcknowledgements() && !neverReceivedAnyInfoMols && 
+					((countdown-- <= 0) && (retransmissionsLeft < 0))) {
+				simulation.setFailure(true);
+			}
 		}
 
 		/**

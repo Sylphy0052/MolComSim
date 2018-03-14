@@ -47,18 +47,18 @@ receiver (15, 0, 0) 3 (15, 0, 0)
 ************Information about Messages**************
 ***** numMessages is the maximum number of messages to be used in the simulation, when the final message is completed
 ***** the simulation will end, even if this is before the maxSimulationStep
-numMessages 50
+numMessages 1
 
 ***** If using acknowledgements numRetransmissions represents the number of times a message will be
 ***** retransmitted before giving up (for both Tx and Rx nanomachines).
-numRetransmissions 100
+numRetransmissions 10
 
 ***** retransmitWaitTime represents the time to wait before retransmitting a message (if no ack mols reach a Tx or no Info mols reach
 ***** an Rx during this time.  If they do, and they have the correct message ID, a new message is generated or the simulation ends.
 ***** If they do not have the correct message ID the current message is retransmitted and the retransmitWaitTime is reset.
 ***** If not using acknowledgements, retransmitwaitTime is simply the amount of time to wait between new message transmissions.
 ** 2 * median(5322.5)
-retransmitWaitTime 10645
+retransmitWaitTime 100
 
 *********Information about Molecules******************
 
@@ -90,7 +90,7 @@ probDRail 0.5
 ***** Note: molecules are represented as 1x1x1 cubes.
 useCollisions 1
 useAcknowledgements 1
-decomposing 1
+decomposing 2
 
 ********Information about microtubule cylindrical tracks************
 ***** Microtubules allow direct, one-way transport of molecules using active movement at velRail velocity.

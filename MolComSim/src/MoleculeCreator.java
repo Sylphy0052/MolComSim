@@ -61,20 +61,20 @@ public class MoleculeCreator {
 					Microtubule microtubule = simulation.getMedium().hasMicrotubule(tempMol.getPosition());
 					if (microtubule != null){
 						collH = simulation.isUsingCollisions() ? 
-								(simulation.decomposing() ? new OnTubuleCollisionHandler(new DecomposingCollisionHandler(new SimpleCollisionHandler())) :
+								(simulation.decomposing() ? new OnTubuleCollisionHandler(new DecomposingCollisionHandler(new SimpleCollisionHandler(), simulation.getDecomposingMode())) :
 									new OnTubuleCollisionHandler(new SimpleCollisionHandler())) : new SimpleCollisionHandler();
 						new OnMicrotubuleMovementController(collH, simulation, tempMol, microtubule);
 					}
 					else{
 						collH = simulation.isUsingCollisions() ? 
-								(simulation.decomposing() ? new DecomposingCollisionHandler(new SimpleCollisionHandler()) :
+								(simulation.decomposing() ? new DecomposingCollisionHandler(new SimpleCollisionHandler(), simulation.getDecomposingMode()) :
 									new StandardCollisionHandler(new SimpleCollisionHandler())) : new SimpleCollisionHandler();
 						new DiffusiveRandomMovementController(collH, simulation, tempMol);
 					}
 				}
 				else if (molMoveType.equals(MoleculeMovementType.PASSIVE)){
 					collH = simulation.isUsingCollisions() ? 
-							(simulation.decomposing() ? new DecomposingCollisionHandler(new SimpleCollisionHandler()) :
+							(simulation.decomposing() ? new DecomposingCollisionHandler(new SimpleCollisionHandler(), simulation.getDecomposingMode()) :
 								new StandardCollisionHandler(new SimpleCollisionHandler())) : new SimpleCollisionHandler();
 					new DiffusiveRandomMovementController(collH, simulation, tempMol);
 				}

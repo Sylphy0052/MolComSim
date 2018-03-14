@@ -53,6 +53,9 @@ public class MolComSim {
 	
 	// 再送信回数
 	private ArrayList<Integer> retransmitNum;
+	private ArrayList<Integer> txRetransmitNum;
+	private ArrayList<Integer> rxRetransmitNum;
+	private boolean failure;
 	
 	//Keeping track of messages sent and received
 	//to identify when simulation completed 
@@ -106,7 +109,11 @@ public class MolComSim {
 	
 	public void initParams() {
 		decomposingNum = 0;
+		
 		retransmitNum = new ArrayList<Integer>();
+		txRetransmitNum = new ArrayList<Integer>();
+		rxRetransmitNum = new ArrayList<Integer>();
+		
 		adjustSteps = new ArrayList<Integer>();
 		infoAdjustNum = new ArrayList<Integer>();
 		ackAdjustNum = new ArrayList<Integer>();
@@ -357,7 +364,7 @@ public class MolComSim {
 	public void printBatchWait() throws IOException {
 		FileWriter batchWriter = new FileWriter("ptime_batch_" + simParams.getOutputFileName(), APPEND_TO_FILE);
 		if(batchWriter != null) {
-			batchWriter.append(finishSimStep + "," + allInfoTime + "," + allInfoNum + "," + allAckTime + "," + allAckNum + "\n");
+			batchWriter.append(allInfoTime + "," + allInfoNum + "," + allAckTime + "," + allAckNum + "\n");
 		}
 		batchWriter.close();
 	}
@@ -374,6 +381,9 @@ public class MolComSim {
 				str += "," + String.valueOf(collisionNum.get(0));
 				for(int i = 1; i < collisionNum.size(); i++) {
 					str += "/" + String.valueOf(collisionNum.get(i));
+				}
+				if(simParams.isDecomposing()) {
+					str += "," + String.valueOf(decomposingNum);
 				}
 				batchWriter.append(str + "\n");
 			}
@@ -395,14 +405,24 @@ public class MolComSim {
 	public void printBatchRetransmission() throws IOException {
 		FileWriter batchWriter = new FileWriter("retransmission_batch_" + simParams.getOutputFileName(), APPEND_TO_FILE);
 		if(batchWriter != null) {
-			String str = "0";
+			String str = "";
+			if(failure) {
+				str = "F";
+			} else {
+				str = "T";
+			}
 			if(retransmitNum.size() != 0) {
 				for(int i = 0; i < retransmitNum.size(); i++) {
 					str += "/" + String.valueOf(retransmitNum.get(i));
 				}
-			}
-			if(simParams.isDecomposing()) {
-				str += "," + String.valueOf(decomposingNum);
+				str += ",0";
+				for(int i = 0; i < txRetransmitNum.size(); i++) {
+					str += "/" + String.valueOf(txRetransmitNum.get(i));
+				}
+				str += ",0";
+				for(int i = 0; i < rxRetransmitNum.size(); i++) {
+					str += "/" + String.valueOf(rxRetransmitNum.get(i));
+				}
 			}
 			batchWriter.append(str + "\n");
 			batchWriter.close();
@@ -439,29 +459,29 @@ public class MolComSim {
 	}
 	
 	public void stackAdjustParams() {
-//		int info = 0;
-//		int ack = 0;
 		adjustSteps.add(simStep);
 		for(MoleculeParams param: simParams.getAllMoleculeParams()) {
 			switch(param.getMoleculeType()) {
 			case INFO:
-//				info = param.getNumMolecules(); 
 				infoAdjustNum.add(param.getNumMolecules());
 				break;
 			case ACK:
-//				ack = param.getNumMolecules();
 				ackAdjustNum.add(param.getNumMolecules());
 				break;
 			default:
 				break;
 			}
 		}
-//		System.out.println(simStep + ":" + info + "/" + ack);
 	}
 	
-	public void addRetransmitNum() {
-//		retransmitNum++;
+	public void addTxRetransmitNum() {
 		retransmitNum.add(simStep);
+		txRetransmitNum.add(simStep);
+	}
+	
+	public void addRxRetransmitNum() {
+		retransmitNum.add(simStep);
+		rxRetransmitNum.add(simStep);
 	}
 	
 	public void addDecomposingNum() {
@@ -554,8 +574,16 @@ public class MolComSim {
 		return simParams.isDecomposing();
 	}
 	
+	public int getDecomposingMode() {
+		return simParams.getDecomposing();
+	}
+	
 	public int getRetransmitWaitTime(){
 		return simParams.getRetransmitWaitTime();
+	}
+	
+	public void setFailure(boolean failure) {
+		this.failure = failure;
 	}
 	
 	//Add an object to the medium's position grid

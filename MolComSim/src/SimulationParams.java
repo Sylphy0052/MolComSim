@@ -25,7 +25,7 @@ public class SimulationParams {
 	private int numRetransmissions = 0;
 	private int retransmitWaitTime = 100;
 	private boolean useCollisions = true;
-	private boolean decomposing = false;
+	private int decomposing = 0;
 	private boolean useAcknowledgements = true;
 	private ArrayList<MoleculeParams> moleculeParams = new ArrayList<MoleculeParams>();
 	private double molRandMoveX = 1;
@@ -187,7 +187,7 @@ public class SimulationParams {
 				useCollisions = (Integer.parseInt(param) == 1) ? true : false;
 			}
 			else if(line.startsWith("decomposing")){
-				decomposing = (Integer.parseInt(param) == 1) ? true : false;
+				decomposing = Integer.parseInt(param);
 			}
 			else if(line.startsWith("useAcknowledgements")){
 				useAcknowledgements = (Integer.parseInt(param) == 1) ? true : false;
@@ -312,7 +312,11 @@ public class SimulationParams {
 	
 	//Decomposing can only be used if acknowledgements are also being used
 	public boolean isDecomposing() {
-		return decomposing && useAcknowledgements;
+		return (decomposing > 0) && useAcknowledgements;
+	}
+	
+	public int getDecomposing() {
+		return decomposing;
 	}
 
 	public boolean isUsingAcknowledgements() {

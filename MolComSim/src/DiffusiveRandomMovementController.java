@@ -42,7 +42,7 @@ public class DiffusiveRandomMovementController extends MovementController{
 			Microtubule microtubule = simulation.getMedium().hasMicrotubule(getMolecule().getPosition());
 			if (microtubule != null){
 				CollisionHandler collH = simulation.isUsingCollisions() ? 
-						(simulation.decomposing() ? new OnTubuleCollisionHandler(new DecomposingCollisionHandler(new SimpleCollisionHandler())) :
+						(simulation.decomposing() ? new OnTubuleCollisionHandler(new DecomposingCollisionHandler(new SimpleCollisionHandler(), simulation.getDecomposingMode())) :
 							new OnTubuleCollisionHandler(new SimpleCollisionHandler())) : new NullCollisionHandler(new SimpleCollisionHandler());
 				new OnMicrotubuleMovementController(collH, simulation, getMolecule(), microtubule);
 			}

@@ -27,7 +27,7 @@ public class OnMicrotubuleMovementController extends MovementController{
 			CollisionHandler collh;
 			if (simulation.isUsingCollisions()){
 				if (simulation.decomposing())
-					collh = new DecomposingCollisionHandler(new SimpleCollisionHandler());
+					collh = new DecomposingCollisionHandler(new SimpleCollisionHandler(), simulation.getDecomposingMode());
 				else
 					collh = new StandardCollisionHandler(new SimpleCollisionHandler());
 			}
