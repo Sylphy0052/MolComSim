@@ -11,10 +11,12 @@ public class MoleculeCreator {
 	protected MolComSim simulation;
 	private NanoMachine source;
 	private Position position;
+	private ForwardErrorCorrection FEC;
 
 	public MoleculeCreator(ArrayList<MoleculeParams> mParams, MolComSim sim) {
 		this.molParams = mParams;
 		this.simulation = sim;
+		this.FEC = this.simulation.getFEC();
 	}
 
 	public MoleculeCreator(ArrayList<MoleculeParams> mParams, MolComSim sim, NanoMachine src, Position molReleasePsn) {
@@ -22,6 +24,7 @@ public class MoleculeCreator {
 		this.simulation = sim;
 		this.source = src;
 		this.position = molReleasePsn;
+		this.FEC = this.simulation.getFEC();
 	}
 	
 
@@ -30,11 +33,13 @@ public class MoleculeCreator {
 	//TODO: lastTransmissionStatus should be it's own enumerated type.  IT tracks whether any previous 
 	// communications were successful or not for adaptive changes.
 	public void createMolecules(int lastTransmissionStatus) { 
+		int numSeq = 0;
 		ArrayList<Molecule> newMols = new ArrayList<Molecule>();
 		for (MoleculeParams mp : molParams){
 			MoleculeType molType = mp.getMoleculeType();
 			MoleculeMovementType molMoveType = mp.getMoleculeMovementType();
 			mp.applyAdaptiveChange(lastTransmissionStatus); // make changes to num molecules based on communication success.
+			mp = FEC.encode(mp);
 			simulation.stackAdjustParams();
 			for (int i = 0; i < mp.getNumMolecules(); i++){
 				Molecule tempMol;
@@ -44,7 +49,8 @@ public class MoleculeCreator {
 					simulation.addInfoNum();
 				}
 				else if (molType.equals(MoleculeType.INFO)){
-					tempMol = new InformationMolecule(position, simulation, source, source.getTransmitterMessageId(), molMoveType, mp.getVolume());
+//					tempMol = new InformationMolecule(position, simulation, source, source.getTransmitterMessageId(), molMoveType, mp.getVolume());
+					tempMol = new InformationMolecule(position, ++numSeq, simulation, source, source.getTransmitterMessageId(), molMoveType);
 					tempMol.setStartTime(simulation.getSimStep());
 					simulation.addAckNum();
 				}

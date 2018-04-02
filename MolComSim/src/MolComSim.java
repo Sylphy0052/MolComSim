@@ -63,6 +63,11 @@ public class MolComSim {
 	private boolean lastMsgCompleted;
 //	private int numMessages;
 	
+	private ForwardErrorCorrection FEC;
+	//Number of packets are required when making data
+	private int numRequiredPackets;
+	
+	
 	//This instance of the Molecular Communication Simulation
 	static MolComSim molComSim;
 
@@ -95,6 +100,7 @@ public class MolComSim {
 		if((simParams.getOutputFileName() != null) && (!simParams.isBatchRun())) {
 			outputFile = new FileWriter(simParams.getOutputFileName());
 		}
+		FEC = FECFactory.create(simParams.getFECParams(), simParams.getNumRequiredPackets());
 		microtubules = new ArrayList<Microtubule>();
 		nanoMachines = new ArrayList<NanoMachine>();
 		transmitters = new ArrayList<NanoMachine>();
@@ -411,6 +417,7 @@ public class MolComSim {
 			} else {
 				str = "T";
 			}
+			str += ",0";
 			if(retransmitNum.size() != 0) {
 				for(int i = 0; i < retransmitNum.size(); i++) {
 					str += "/" + String.valueOf(retransmitNum.get(i));
@@ -487,6 +494,10 @@ public class MolComSim {
 	public void addDecomposingNum() {
 		decomposingNum++;
 	}
+	
+	public int getNumRequiredPackets() {
+		return simParams.getNumRequiredPackets();
+	}
 
 	/** Add molecules to molecules list field
 	 * 
@@ -523,6 +534,22 @@ public class MolComSim {
 				System.out.println("Error: unable to write to file: " + simParams.getOutputFileName());
 				e.printStackTrace();
 			}
+		}
+	}
+	
+	public void recievedMessage(int msgId,int numRecievedPackets) {	
+		String recievedMessage = "Recieved message: " + (msgId + 1) + "-" +
+					numRecievedPackets + ", at step: " + simStep + "\n";
+		if(!simParams.isBatchRun()) { 
+			System.out.print(recievedMessage);
+		}
+		if((outputFile != null)  && (!simParams.isBatchRun())) {
+//			try {
+//				outputFile.write(recievedMessage);
+//			} catch (IOException e) {
+//				System.out.println("Error: unable to write to file: " + simParams.getOutputFileName());
+//				e.printStackTrace();
+//			}
 		}
 	}
 
@@ -570,6 +597,10 @@ public class MolComSim {
 		return simParams.isUsingCollisions();
 	}
 	
+	public boolean assembling(){
+		return simParams.isAssembling();
+	}
+	
 	public boolean decomposing(){
 		return simParams.isDecomposing();
 	}
@@ -584,6 +615,10 @@ public class MolComSim {
 	
 	public void setFailure(boolean failure) {
 		this.failure = failure;
+	}
+	
+	public ForwardErrorCorrection getFEC() {
+		return FEC;
 	}
 	
 	//Add an object to the medium's position grid

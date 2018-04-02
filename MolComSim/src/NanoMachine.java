@@ -172,6 +172,7 @@ public class NanoMachine {
 		private int countdown;
 		private boolean createMoleculesDelayed = false;
 		private Position molReleasePsn;
+		private ForwardErrorCorrection FEC;
 		
 		// for intermediate nodes, track the messages we have retransmitted so we 
 		// do not retransmit the same message multiple times.
@@ -186,6 +187,7 @@ public class NanoMachine {
 			this.simulation = sim;
 			this.moleculeCreator = new MoleculeCreator(mpl, this.simulation, this.nanoMachine, this.molReleasePsn);
 			this.retransmissionsLeft =  this.simulation.getNumRetransmissions();
+			this.FEC = this.simulation.getFEC();
 		}
 
 		// in order to have intermediate nodes no retransmit multiple times for each molecule.
@@ -297,6 +299,9 @@ public class NanoMachine {
 
 		private MolComSim simulation;
 		private int currMsgId;
+		private ForwardErrorCorrection FEC;
+		private int numRequiredPackets = 0;
+		private int numRecievedPackets = 0;
 		private int retransmissionsLeft;
 		private MoleculeCreator moleculeCreator;
 		private NanoMachine nanoMachine;
@@ -317,6 +322,12 @@ public class NanoMachine {
 			this.molReleasePsn = molReleasePsn;
 			this.nanoMachine = nm;
 			this.simulation = sim;
+//			FECMethodType method = sim.getSimParams().getFECMethod();
+//			double rate = sim.getSimParams().getFECrate();
+//			int numRequiredPackets = sim.getSimParams().getNumRequiredPackets();
+//			this.FEC = FECFactory.create(method, rate, numRequiredPackets);
+			this.numRequiredPackets = this.simulation.getNumRequiredPackets();
+			this.FEC = this.simulation.getFEC();
 			if(this.simulation.isUsingAcknowledgements())
 			{
 				this.moleculeCreator = new MoleculeCreator(mpl, simulation, nanoMachine, molReleasePsn);
@@ -367,22 +378,49 @@ public class NanoMachine {
 			m.setEndTime(simulation.getSimStep());
 			simulation.addInfoTime(m.getSendTime());
 			neverReceivedAnyInfoMols = false; // we have received at least one information molecule
+			if (m instanceof InformationMolecule && simulation.assembling()) {
+				FEC.add(m);
+			}
+			// この辺
 			if(m.getMsgId() == currMsgId + 1){
-				currMsgId++;		
-				lastCommunicationStatus = LAST_COMMUNICATION_SUCCESS;
-				if(simulation.isUsingAcknowledgements()) {
-					createMoleculesDelayed = true;
-					retransmissionsLeft =  simulation.getNumRetransmissions();
-				} 
-				else {
-					simulation.completedMessage(currMsgId);
+//				currMsgId++;		
+//				lastCommunicationStatus = LAST_COMMUNICATION_SUCCESS;
+				numRecievedPackets++;
+				simulation.recievedMessage(currMsgId, numRecievedPackets);
+				if((simulation.assembling() && FEC.canDecode()) || 
+						(!simulation.assembling() && numRecievedPackets >= numRequiredPackets)) {
+					currMsgId++;
+					lastCommunicationStatus = LAST_COMMUNICATION_SUCCESS;
+					
+					if(simulation.isUsingAcknowledgements()) {
+						createMoleculesDelayed = true;
+						retransmissionsLeft =  simulation.getNumRetransmissions();
+					} 
+					else {
+						simulation.completedMessage(currMsgId);
+					}
 				}
-//			} else if (simulation.isUsingAcknowledgements() && (retransmissionsLeft-- > 0)) {
-//				lastCommunicationStatus = LAST_COMMUNICATION_FAILURE;
-//				createMoleculesDelayed = true;
+			}
+			else if (simulation.isUsingAcknowledgements() && (retransmissionsLeft-- > 0)) {
+				lastCommunicationStatus = LAST_COMMUNICATION_FAILURE;
+				createMoleculesDelayed = true;
 			}
 			// Need to remove received molecules from the simulation.
 			simulation.moveObject(m, m.getPosition(), simulation.getMedium().garbageSpot());
+				
+//			if(simulation.isUsingAcknowledgements()) {
+//					createMoleculesDelayed = true;
+//					retransmissionsLeft =  simulation.getNumRetransmissions();
+//				} 
+//				else {
+//					simulation.completedMessage(currMsgId);
+//				}
+//			} else if (simulation.isUsingAcknowledgements() && (retransmissionsLeft-- > 0)) {
+//				lastCommunicationStatus = LAST_COMMUNICATION_FAILURE;
+//				createMoleculesDelayed = true;
+//			}
+			// Need to remove received molecules from the simulation.
+//			simulation.moveObject(m, m.getPosition(), simulation.getMedium().garbageSpot());
 		}
 
 		// Receives and retransmits a molecule for multi-hop/signal boosted communications.

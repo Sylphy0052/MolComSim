@@ -49,23 +49,16 @@ receiver (15, 0, 0) 3 (15, 0, 0)
 ***** the simulation will end, even if this is before the maxSimulationStep
 numMessages 1
 
-***** numRequredPackets is the number of packets required to generate a message.
-***** When assembling is enabled, a simulator ends when Rx received the specified number of information molecules by numRequiredPackets.
-***** When assembling is disabled, a message is generated from the specified number of information molecules by numRequredPackets.
-***** For example, when assembling is enabled and numRequiredPackets = 1, a simulator ends when Rx received a information molecule.
-***** When assembling is diabled and numRequirePackts = 10, a simulator ends when Rx received more than numRequiredPackets information molecules and decoding is successful.
-numRequiredPackets 10
-
 ***** If using acknowledgements numRetransmissions represents the number of times a message will be
 ***** retransmitted before giving up (for both Tx and Rx nanomachines).
-numRetransmissions 5
+numRetransmissions 10
 
 ***** retransmitWaitTime represents the time to wait before retransmitting a message (if no ack mols reach a Tx or no Info mols reach
 ***** an Rx during this time.  If they do, and they have the correct message ID, a new message is generated or the simulation ends.
 ***** If they do not have the correct message ID the current message is retransmitted and the retransmitWaitTime is reset.
 ***** If not using acknowledgements, retransmitwaitTime is simply the amount of time to wait between new message transmissions.
 ** 2 * median(5322.5)
-retransmitWaitTime 10645
+retransmitWaitTime 100
 
 *********Information about Molecules******************
 
@@ -79,8 +72,8 @@ stepLengthZ 1
 ** moleculeParams require the number of molecules to be released each time, the type of molecule (INFO|ACK|NOISE), the movement type for
 ** non-noise molecules (PASSIVE|ACTIVE), and an optional, adaptive change number.  Adaptive change changes num mols to send out based on
 ** comm success/failure.
-moleculeParams 11 INFO PASSIVE 0 1
-moleculeParams 20 ACK PASSIVE 0 1
+moleculeParams 20 INFO PASSIVE 1 1
+moleculeParams 20 ACK PASSIVE 1 1
 moleculeParams 0 NOISE 0
 
 *********Below parameters are for active propagation
@@ -97,8 +90,7 @@ probDRail 0.5
 ***** Note: molecules are represented as 1x1x1 cubes.
 useCollisions 1
 useAcknowledgements 1
-decomposing 0
-assembling 1
+decomposing 2
 
 ********Information about microtubule cylindrical tracks************
 ***** Microtubules allow direct, one-way transport of molecules using active movement at velRail velocity.
@@ -110,14 +102,8 @@ assembling 1
 ***** release position, but with end point at least 3 units from the Rx's molecule release position (but sitll within the volume of the Rx.
 ***** The other with start point at the Rx's molecule release position, but with end point at least 3 units from the Tx's release position
 ***** (but still within the volume of the Tx).
-**microtubuleParams (-15, 0, 0) (15, 0, 0)
-**microtubuleParams (15, 3, 3) (-15, 0, 0)
-
-********** Information about Forward Error Correction ************
-***** FEC requires the method of encoding and decoding (NONE|PARITYCHECK), and the specified parameter(s) depending on the method.
-***** When NONE is specified, FEC doesn't work, and any additional parameters are not required.
-***** Parity check method requires parity codes rate.  For example, when parity codes rate is 10%, 0.1 is specified.
-FEC PARITYCHECK 0.1
+***microtubuleParams (-15, 0, 0) (15, 0, 0)
+***microtubuleParams (15, 3, 3) (-15, 0, 0)
 
 ***** Name of the file to output results to.
-outputFile TxRx30_ARQ20-20_Pass-Pass_RTO1.txt
+outputFile TxRx30_ARQ20-20_Pass-Pass_RTO1_adjust1.txt

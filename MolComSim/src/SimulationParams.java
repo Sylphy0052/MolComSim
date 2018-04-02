@@ -20,18 +20,21 @@ public class SimulationParams {
 	private ArrayList<NanoMachineParam> receiverParams = new ArrayList<>();
 	private ArrayList<IntermediateNodeParam> intermediateNodeParams = new ArrayList<>();
 	private ArrayList<MicrotubuleParams> microtubuleParams = new ArrayList<MicrotubuleParams>();
+	private FECParams fecParams;
 	private int numMessages = 1;
 	private int maxNumSteps = 100000;
 	private int numRetransmissions = 0;
 	private int retransmitWaitTime = 100;
+	private int numRequiredPackets = 1;
 	private boolean useCollisions = true;
 	private int decomposing = 0;
+	private boolean assembling = false;
 	private boolean useAcknowledgements = true;
 	private ArrayList<MoleculeParams> moleculeParams = new ArrayList<MoleculeParams>();
 	private double molRandMoveX = 1;
 	private double molRandMoveY = 1;
 	private double molRandMoveZ = 1;
-	private int velRail = 1; 
+	private double velRail = 1.0; 
 	private double probDRail = 0.0;
 	private boolean batchRun; // store single result (last simulation step used) in batch file, append to file if already there.
 	private boolean isWait;
@@ -177,6 +180,9 @@ public class SimulationParams {
 			else if(line.startsWith("numMessages")){
 				numMessages = Integer.parseInt(param);				
 			}
+			else if(line.startsWith("numRequiredPackets")){
+				numRequiredPackets = Integer.parseInt(param);
+			}
 			else if(line.startsWith("numRetransmissions")){
 				numRetransmissions = Integer.parseInt(param);				
 			}
@@ -189,14 +195,22 @@ public class SimulationParams {
 			else if(line.startsWith("decomposing")){
 				decomposing = Integer.parseInt(param);
 			}
+			else if(line.startsWith("assembling")){
+				assembling = (Integer.parseInt(param) == 1) ? true : false;
+			}
 			else if(line.startsWith("useAcknowledgements")){
 				useAcknowledgements = (Integer.parseInt(param) == 1) ? true : false;
 			}
 			else if(line.startsWith("velRail")){
-				velRail = Integer.parseInt(param);				
+				velRail = Double.parseDouble(param);				
 			}
 			else if(line.startsWith("probDRail")){
 				probDRail = Double.parseDouble(param);				
+			}
+			else if(line.startsWith("FEC")) {
+				fecParams = new FECParams(
+						new Scanner(
+						line.substring(line.indexOf(" "))));
 			} else if (line.startsWith("moleculeParams")) {
 				MoleculeParams molParam = new MoleculeParams(new Scanner(line.substring(line.indexOf(" "))));
 				if(molParam.getAdaptiveChange() == 0) {
@@ -297,6 +311,10 @@ public class SimulationParams {
 	public ArrayList<MicrotubuleParams> getMicrotubuleParams() {
 		return microtubuleParams;
 	}
+	
+	public FECParams getFECParams() {
+		return fecParams;
+	}
 
 	public int getNumRetransmissions() {
 		return numRetransmissions;
@@ -304,6 +322,14 @@ public class SimulationParams {
 
 	public int getRetransmitWaitTime() {
 		return retransmitWaitTime;
+	}
+	
+	public int getNumRequiredPackets() {
+		return numRequiredPackets;
+	}
+	
+	public boolean isAssembling() {
+		return assembling;
 	}
 
 	public boolean isUsingCollisions() {
@@ -335,7 +361,7 @@ public class SimulationParams {
 		return molRandMoveZ;
 	}
 
-	public int getVelRail() {
+	public double getVelRail() {
 		return velRail;
 	}
 
