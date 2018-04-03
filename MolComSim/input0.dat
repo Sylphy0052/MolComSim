@@ -80,13 +80,14 @@ pakcetStepLengthX 1
 pakcetStepLengthY 1
 pakcetStepLengthZ 1
 
-
 ** moleculeParams require the number of molecules to be released each time, the type of molecule (INFO|ACK|NOISE), the movement type for
 ** non-noise molecules (PASSIVE|ACTIVE), and an optional, adaptive change number.  Adaptive change changes num mols to send out based on
 ** comm success/failure.
 moleculeParams 20 INFO PASSIVE 0 1
 moleculeParams 20 ACK PASSIVE 0 1
 moleculeParams 0 NOISE 0
+
+packetDiameter 0.1
 
 *********Below parameters are for active propagation
 ***** velrail is the number of units a molecule travels along a microtubule using active propagation in a single step.

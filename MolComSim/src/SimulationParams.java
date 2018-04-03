@@ -26,6 +26,7 @@ public class SimulationParams {
 	private int numRetransmissions = 0;
 	private int retransmitWaitTime = 100;
 	private int numRequiredPackets = 1;
+	private double packetDiameter = 1.0;
 	private boolean useCollisions = true;
 	private int decomposing = 0;
 	private boolean assembling = false;
@@ -196,6 +197,9 @@ public class SimulationParams {
 //			else if(line.startsWith("numRequiredPackets")){
 //				numRequiredPackets = Integer.parseInt(param);
 //			}
+			else if(line.startsWith("packetDiameter")){
+				packetDiameter = Double.parseDouble(param);
+			}
 			else if(line.startsWith("numRetransmissions")){
 				numRetransmissions = Integer.parseInt(param);				
 			}
@@ -391,6 +395,10 @@ public class SimulationParams {
 
 	public double getPacketStepLengthZ() {
 		return packetStepLengthZ;
+	}
+	
+	public double getPacketDiameter() {
+		return packetDiameter;
 	}
 
 	public double getVelRail() {

@@ -1,4 +1,0 @@
-Completed message: 1, at step: 11862
-Last message completed.
-Ending simulation: Last step: 11862 RetransmitNum: [10645]
-All 1 messages completed.

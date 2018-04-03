@@ -13,8 +13,8 @@ public class FECParams {
 			requiredPackets = readParams.nextInt();
 			rate = readParams.nextDouble();
 			packetNum = (int)(requiredPackets * (1.0 + rate));
-			System.out.println("requiredPackets: " + String.valueOf(requiredPackets));
-			System.out.println("packetNum: " + String.valueOf(packetNum));
+//			System.out.println("requiredPackets: " + String.valueOf(requiredPackets));
+//			System.out.println("packetNum: " + String.valueOf(packetNum));
 //			parityCheckParams(readParams);
 			break;
 		

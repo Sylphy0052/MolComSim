@@ -54,8 +54,7 @@ public class MoleculeCreator {
 							simulation.addInfoNum();
 						}
 						else if (molType.equals(MoleculeType.INFO)){
-							//					tempMol = new InformationMolecule(position, simulation, source, source.getTransmitterMessageId(), molMoveType, mp.getVolume());
-							tempMol = new InformationMolecule(position, i + 1, simulation, source, source.getTransmitterMessageId(), molMoveType, mp.getVolume());
+							tempMol = new InformationMolecule(position, i + 1, simulation, source, source.getTransmitterMessageId(), molMoveType, Math.pow(simulation.getSimParams().getPacketDiameter(), 3));
 							tempMol.setStartTime(simulation.getSimStep());
 							simulation.addAckNum();
 						}

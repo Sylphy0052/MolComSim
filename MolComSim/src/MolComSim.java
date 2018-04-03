@@ -545,7 +545,7 @@ public class MolComSim {
 		String recievedMessage = "Received message: " + (msgId + 1) + "-" +
 					numRecievedPackets + ", at step: " + simStep + "\n";
 		if(!simParams.isBatchRun()) { 
-			System.out.print(recievedMessage);
+//			System.out.print(recievedMessage);
 		}
 		if((outputFile != null)  && (!simParams.isBatchRun())) {
 //			try {
