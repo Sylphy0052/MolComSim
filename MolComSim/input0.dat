@@ -54,7 +54,7 @@ numMessages 1
 ***** When assembling is disabled, a message is generated from the specified number of information molecules by numRequredPackets.
 ***** For example, when assembling is enabled and numRequiredPackets = 1, a simulator ends when Rx received a information molecule.
 ***** When assembling is diabled and numRequirePackts = 10, a simulator ends when Rx received more than numRequiredPackets information molecules and decoding is successful.
-numRequiredPackets 10
+*numRequiredPackets 10
 
 ***** If using acknowledgements numRetransmissions represents the number of times a message will be
 ***** retransmitted before giving up (for both Tx and Rx nanomachines).
@@ -76,10 +76,15 @@ stepLengthX 1
 stepLengthY 1
 stepLengthZ 1
 
+pakcetStepLengthX 1
+pakcetStepLengthY 1
+pakcetStepLengthZ 1
+
+
 ** moleculeParams require the number of molecules to be released each time, the type of molecule (INFO|ACK|NOISE), the movement type for
 ** non-noise molecules (PASSIVE|ACTIVE), and an optional, adaptive change number.  Adaptive change changes num mols to send out based on
 ** comm success/failure.
-moleculeParams 11 INFO PASSIVE 0 1
+moleculeParams 20 INFO PASSIVE 0 1
 moleculeParams 20 ACK PASSIVE 0 1
 moleculeParams 0 NOISE 0
 
@@ -98,7 +103,7 @@ probDRail 0.5
 useCollisions 1
 useAcknowledgements 1
 decomposing 0
-assembling 1
+*assembling 1
 
 ********Information about microtubule cylindrical tracks************
 ***** Microtubules allow direct, one-way transport of molecules using active movement at velRail velocity.
@@ -117,7 +122,7 @@ assembling 1
 ***** FEC requires the method of encoding and decoding (NONE|PARITYCHECK), and the specified parameter(s) depending on the method.
 ***** When NONE is specified, FEC doesn't work, and any additional parameters are not required.
 ***** Parity check method requires parity codes rate.  For example, when parity codes rate is 10%, 0.1 is specified.
-FEC PARITYCHECK 0.1
+FEC PARITYCHECK 10 0.1
 
 ***** Name of the file to output results to.
 outputFile TxRx30_ARQ20-20_Pass-Pass_RTO1.txt

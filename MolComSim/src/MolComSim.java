@@ -63,7 +63,7 @@ public class MolComSim {
 	private boolean lastMsgCompleted;
 //	private int numMessages;
 	
-	private ForwardErrorCorrection FEC;
+	private ForwardErrorCorrection FEC = null;
 	//Number of packets are required when making data
 	private int numRequiredPackets;
 	
@@ -100,7 +100,11 @@ public class MolComSim {
 		if((simParams.getOutputFileName() != null) && (!simParams.isBatchRun())) {
 			outputFile = new FileWriter(simParams.getOutputFileName());
 		}
-		FEC = FECFactory.create(simParams.getFECParams(), simParams.getNumRequiredPackets());
+		if(simParams.isFEC()) {
+			FEC = FECFactory.create(simParams.getFECParams(), simParams.getNumRequiredPackets());
+		} else {
+			FEC = null;
+		}
 		microtubules = new ArrayList<Microtubule>();
 		nanoMachines = new ArrayList<NanoMachine>();
 		transmitters = new ArrayList<NanoMachine>();
@@ -538,7 +542,7 @@ public class MolComSim {
 	}
 	
 	public void recievedMessage(int msgId,int numRecievedPackets) {	
-		String recievedMessage = "Recieved message: " + (msgId + 1) + "-" +
+		String recievedMessage = "Received message: " + (msgId + 1) + "-" +
 					numRecievedPackets + ", at step: " + simStep + "\n";
 		if(!simParams.isBatchRun()) { 
 			System.out.print(recievedMessage);

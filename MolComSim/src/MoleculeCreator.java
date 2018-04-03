@@ -26,71 +26,157 @@ public class MoleculeCreator {
 		this.position = molReleasePsn;
 		this.FEC = this.simulation.getFEC();
 	}
-	
+
 
 	//TODO: Should this method be simplified with factories or helper methods?
 	//TODO: This entire method is crap.  Make helper methods or use some kind of design pattern
 	//TODO: lastTransmissionStatus should be it's own enumerated type.  IT tracks whether any previous 
 	// communications were successful or not for adaptive changes.
 	public void createMolecules(int lastTransmissionStatus) { 
-		int numSeq = 0;
+		//		int numSeq = 0;
 		ArrayList<Molecule> newMols = new ArrayList<Molecule>();
 		for (MoleculeParams mp : molParams){
 			MoleculeType molType = mp.getMoleculeType();
 			MoleculeMovementType molMoveType = mp.getMoleculeMovementType();
 			mp.applyAdaptiveChange(lastTransmissionStatus); // make changes to num molecules based on communication success.
-			mp = FEC.encode(mp);
+			if(simulation.getSimParams().isFEC()) {
+				mp = FEC.encode(mp);
+			}
 			simulation.stackAdjustParams();
-			for (int i = 0; i < mp.getNumMolecules(); i++){
-				Molecule tempMol;
-				if (molType.equals(MoleculeType.ACK)){
-					tempMol = new AcknowledgementMolecule(position, simulation, source, source.getReceiverMessageId(),molMoveType, mp.getVolume());
-					tempMol.setStartTime(simulation.getSimStep());
-					simulation.addInfoNum();
-				}
-				else if (molType.equals(MoleculeType.INFO)){
-//					tempMol = new InformationMolecule(position, simulation, source, source.getTransmitterMessageId(), molMoveType, mp.getVolume());
-					tempMol = new InformationMolecule(position, ++numSeq, simulation, source, source.getTransmitterMessageId(), molMoveType);
-					tempMol.setStartTime(simulation.getSimStep());
-					simulation.addAckNum();
-				}
-				else if (molType.equals(MoleculeType.NOISE)){
-					tempMol = new NoiseMolecule(position, simulation, molMoveType, mp.getVolume());
-				}
-				else {
-					//TODO: Error management?
-					tempMol = null;
-				}
-				CollisionHandler collH;
-				//Look for nearby microtubules if the molecules are ACTIVE
-				if (molMoveType.equals(MoleculeMovementType.ACTIVE)){
-					Microtubule microtubule = simulation.getMedium().hasMicrotubule(tempMol.getPosition());
-					if (microtubule != null){
-						collH = simulation.isUsingCollisions() ? 
-								(simulation.decomposing() ? new OnTubuleCollisionHandler(new DecomposingCollisionHandler(new SimpleCollisionHandler(), simulation.getDecomposingMode())) :
-									new OnTubuleCollisionHandler(new SimpleCollisionHandler())) : new SimpleCollisionHandler();
-						new OnMicrotubuleMovementController(collH, simulation, tempMol, microtubule);
+			//			for (int i = 0; i < mp.getNumMolecules(); i++){
+			if(simulation.getSimParams().isFEC()) {
+				for(int i = 0; i < simulation.getSimParams().getFECParams().getPacketNum(); i++) {
+					for (int j = 0; j < mp.getNumMolecules(); j++){
+						Molecule tempMol;
+						if (molType.equals(MoleculeType.ACK)){
+							tempMol = new AcknowledgementMolecule(position, simulation, source, source.getReceiverMessageId(),molMoveType, mp.getVolume());
+							tempMol.setStartTime(simulation.getSimStep());
+							simulation.addInfoNum();
+						}
+						else if (molType.equals(MoleculeType.INFO)){
+							//					tempMol = new InformationMolecule(position, simulation, source, source.getTransmitterMessageId(), molMoveType, mp.getVolume());
+							tempMol = new InformationMolecule(position, i + 1, simulation, source, source.getTransmitterMessageId(), molMoveType, mp.getVolume());
+							tempMol.setStartTime(simulation.getSimStep());
+							simulation.addAckNum();
+						}
+						else if (molType.equals(MoleculeType.NOISE)){
+							tempMol = new NoiseMolecule(position, simulation, molMoveType, mp.getVolume());
+						}
+						else {
+							//TODO: Error management?
+							tempMol = null;
+						}
+						CollisionHandler collH;
+						//Look for nearby microtubules if the molecules are ACTIVE
+						if (molMoveType.equals(MoleculeMovementType.ACTIVE)){
+							Microtubule microtubule = simulation.getMedium().hasMicrotubule(tempMol.getPosition());
+							if(simulation.getSimParams().isFEC()) {
+								collH = simulation.isUsingCollisions() ? 
+										(simulation.decomposing() ? new DecomposingCollisionHandler(new SimpleCollisionHandler(), simulation.getDecomposingMode()) :
+											new StandardCollisionHandler(new SimpleCollisionHandler())) : new SimpleCollisionHandler();
+										new PacketMovementController(collH, simulation, tempMol);
+							}
+							else if (microtubule != null){
+								collH = simulation.isUsingCollisions() ? 
+										(simulation.decomposing() ? new OnTubuleCollisionHandler(new DecomposingCollisionHandler(new SimpleCollisionHandler(), simulation.getDecomposingMode())) :
+											new OnTubuleCollisionHandler(new SimpleCollisionHandler())) : new SimpleCollisionHandler();
+										new OnMicrotubuleMovementController(collH, simulation, tempMol, microtubule);
+							}
+							else{
+								collH = simulation.isUsingCollisions() ? 
+										(simulation.decomposing() ? new DecomposingCollisionHandler(new SimpleCollisionHandler(), simulation.getDecomposingMode()) :
+											new StandardCollisionHandler(new SimpleCollisionHandler())) : new SimpleCollisionHandler();
+										new DiffusiveRandomMovementController(collH, simulation, tempMol);
+							}
+						}
+						else if (molMoveType.equals(MoleculeMovementType.PASSIVE)){
+							if(simulation.getSimParams().isFEC()) {
+								collH = simulation.isUsingCollisions() ? 
+										(simulation.decomposing() ? new DecomposingCollisionHandler(new SimpleCollisionHandler(), simulation.getDecomposingMode()) :
+											new StandardCollisionHandler(new SimpleCollisionHandler())) : new SimpleCollisionHandler();
+										new PacketMovementController(collH, simulation, tempMol);
+							}
+							else {
+								collH = simulation.isUsingCollisions() ? 
+										(simulation.decomposing() ? new DecomposingCollisionHandler(new SimpleCollisionHandler(), simulation.getDecomposingMode()) :
+											new StandardCollisionHandler(new SimpleCollisionHandler())) : new SimpleCollisionHandler();
+										new DiffusiveRandomMovementController(collH, simulation, tempMol);
+							}
+						}
+						else if (molMoveType.equals(MoleculeMovementType.NONE)){
+							collH = new SimpleCollisionHandler();
+							new NullMovementController(collH, simulation, tempMol);
+						} else {
+							//TODO: error management
+						}
+						newMols.add(tempMol);
 					}
-					else{
-						collH = simulation.isUsingCollisions() ? 
-								(simulation.decomposing() ? new DecomposingCollisionHandler(new SimpleCollisionHandler(), simulation.getDecomposingMode()) :
-									new StandardCollisionHandler(new SimpleCollisionHandler())) : new SimpleCollisionHandler();
-						new DiffusiveRandomMovementController(collH, simulation, tempMol);
+				}
+			} else {
+				for (int j = 0; j < mp.getNumMolecules(); j++){
+					Molecule tempMol;
+					if (molType.equals(MoleculeType.ACK)){
+						tempMol = new AcknowledgementMolecule(position, simulation, source, source.getReceiverMessageId(),molMoveType, mp.getVolume());
+						tempMol.setStartTime(simulation.getSimStep());
+						simulation.addInfoNum();
 					}
+					else if (molType.equals(MoleculeType.INFO)){
+						tempMol = new InformationMolecule(position, simulation, source, source.getTransmitterMessageId(), molMoveType, mp.getVolume());
+						tempMol.setStartTime(simulation.getSimStep());
+						simulation.addAckNum();
+					}
+					else if (molType.equals(MoleculeType.NOISE)){
+						tempMol = new NoiseMolecule(position, simulation, molMoveType, mp.getVolume());
+					}
+					else {
+						//TODO: Error management?
+						tempMol = null;
+					}
+					CollisionHandler collH;
+					//Look for nearby microtubules if the molecules are ACTIVE
+					if (molMoveType.equals(MoleculeMovementType.ACTIVE)){
+						Microtubule microtubule = simulation.getMedium().hasMicrotubule(tempMol.getPosition());
+						if(simulation.getSimParams().isFEC()) {
+							collH = simulation.isUsingCollisions() ? 
+									(simulation.decomposing() ? new DecomposingCollisionHandler(new SimpleCollisionHandler(), simulation.getDecomposingMode()) :
+										new StandardCollisionHandler(new SimpleCollisionHandler())) : new SimpleCollisionHandler();
+									new PacketMovementController(collH, simulation, tempMol);
+						}
+						else if (microtubule != null){
+							collH = simulation.isUsingCollisions() ? 
+									(simulation.decomposing() ? new OnTubuleCollisionHandler(new DecomposingCollisionHandler(new SimpleCollisionHandler(), simulation.getDecomposingMode())) :
+										new OnTubuleCollisionHandler(new SimpleCollisionHandler())) : new SimpleCollisionHandler();
+									new OnMicrotubuleMovementController(collH, simulation, tempMol, microtubule);
+						}
+						else{
+							collH = simulation.isUsingCollisions() ? 
+									(simulation.decomposing() ? new DecomposingCollisionHandler(new SimpleCollisionHandler(), simulation.getDecomposingMode()) :
+										new StandardCollisionHandler(new SimpleCollisionHandler())) : new SimpleCollisionHandler();
+									new DiffusiveRandomMovementController(collH, simulation, tempMol);
+						}
+					}
+					else if (molMoveType.equals(MoleculeMovementType.PASSIVE)){
+						if(simulation.getSimParams().isFEC()) {
+							collH = simulation.isUsingCollisions() ? 
+									(simulation.decomposing() ? new DecomposingCollisionHandler(new SimpleCollisionHandler(), simulation.getDecomposingMode()) :
+										new StandardCollisionHandler(new SimpleCollisionHandler())) : new SimpleCollisionHandler();
+									new PacketMovementController(collH, simulation, tempMol);
+						}
+						else {
+							collH = simulation.isUsingCollisions() ? 
+									(simulation.decomposing() ? new DecomposingCollisionHandler(new SimpleCollisionHandler(), simulation.getDecomposingMode()) :
+										new StandardCollisionHandler(new SimpleCollisionHandler())) : new SimpleCollisionHandler();
+									new DiffusiveRandomMovementController(collH, simulation, tempMol);
+						}
+					}
+					else if (molMoveType.equals(MoleculeMovementType.NONE)){
+						collH = new SimpleCollisionHandler();
+						new NullMovementController(collH, simulation, tempMol);
+					} else {
+						//TODO: error management
+					}
+					newMols.add(tempMol);
 				}
-				else if (molMoveType.equals(MoleculeMovementType.PASSIVE)){
-					collH = simulation.isUsingCollisions() ? 
-							(simulation.decomposing() ? new DecomposingCollisionHandler(new SimpleCollisionHandler(), simulation.getDecomposingMode()) :
-								new StandardCollisionHandler(new SimpleCollisionHandler())) : new SimpleCollisionHandler();
-					new DiffusiveRandomMovementController(collH, simulation, tempMol);
-				}
-				else if (molMoveType.equals(MoleculeMovementType.NONE)){
-					collH = new SimpleCollisionHandler();
-					new NullMovementController(collH, simulation, tempMol);
-				} else {
-					//TODO: error management
-				}
-				newMols.add(tempMol);
 			}
 		}
 		simulation.addMolecules(newMols);

@@ -53,6 +53,11 @@ public abstract class Molecule {
 		this.numSequence = numSeq;
  	}
 	
+	protected Molecule(Position psn, int numSeq, MolComSim sim, MoleculeMovementType molMvType, double volume) {
+ 		this(psn, sim, molMvType, volume);
+		this.numSequence = numSeq;
+ 	}
+	
 	//Moves the molecule as defined by its movementController
 	public abstract void move();
 

@@ -1,4 +1,4 @@
-Completed message: 1, at step: 105821
+Completed message: 1, at step: 11862
 Last message completed.
-Ending simulation: Last step: 105821 RetransmitNum: [553, 5877, 10645, 11201, 16525, 21291, 21849, 31937, 42583, 53229]
+Ending simulation: Last step: 11862 RetransmitNum: [10645]
 All 1 messages completed.

@@ -9,7 +9,8 @@ public class ParityCheck extends ForwardErrorCorrection{
 	public ParityCheck(FECParams params, int numRequiredPackets) {
 		super(params, numRequiredPackets);
 		this.rate = params.getFECRate();
-		this.numPackets = (int)(numRequiredPackets * (rate + 1.0));
+//		this.numPackets = (int)(numRequiredPackets * (rate + 1.0));
+		this.numPackets = params.getPacketNum();
 		this.numPacketsInBlock = (int) (1 / rate) + 1;
 //		System.out.println(this.numPackets);
 //		System.out.println(rate);
@@ -57,8 +58,8 @@ public class ParityCheck extends ForwardErrorCorrection{
 
 	@Override
 	void recieve(Molecule m) {
-		System.out.println(m.getNumSequence()-1);
-		isReceived[m.getNumSequence()-1] = true;
+//		System.out.println(m.getNumSequence() - 1);
+		isReceived[m.getNumSequence() - 1] = true;
 	}
 
 }

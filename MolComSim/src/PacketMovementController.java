@@ -6,10 +6,10 @@
 
 import java.util.*;
 
-public class DiffusiveRandomMovementController extends MovementController{
+public class PacketMovementController extends MovementController{
 	private static Random random = new Random();
 	
-	public DiffusiveRandomMovementController(CollisionHandler collHandle, MolComSim sim, Molecule mol) {
+	public PacketMovementController(CollisionHandler collHandle, MolComSim sim, Molecule mol) {
 		super(collHandle, sim, mol);
 	}
 	
@@ -25,9 +25,9 @@ public class DiffusiveRandomMovementController extends MovementController{
 		int currentZ = currentPosition.getZ();
 		// The idea behind the getMolRandMove~ methods are that the molecule moves a random amount in one step
 		// , and that will, for each dimension, be a random amount between -getMolRandMove~ and +getMolRandMove~
-		double maxXDelta = getSimulation().getSimParams().getPacketStepLengthX();
-		double maxYDelta = getSimulation().getSimParams().getPacketStepLengthY();
-		double maxZDelta = getSimulation().getSimParams().getPacketStepLengthZ();
+		double maxXDelta = getSimulation().getSimParams().getMolRandMoveX();
+		double maxYDelta = getSimulation().getSimParams().getMolRandMoveY();;
+		double maxZDelta = getSimulation().getSimParams().getMolRandMoveZ();;
 		int nextX = currentX + (int)Math.round(random.nextDouble() * (maxXDelta * 2) - maxXDelta);
 		int nextY = currentY + (int)Math.round(random.nextDouble() * (maxYDelta * 2) - maxYDelta);
 		int nextZ = currentZ + (int)Math.round(random.nextDouble() * (maxZDelta * 2) - maxZDelta);

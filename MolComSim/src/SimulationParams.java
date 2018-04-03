@@ -34,11 +34,15 @@ public class SimulationParams {
 	private double molRandMoveX = 1;
 	private double molRandMoveY = 1;
 	private double molRandMoveZ = 1;
+	private double packetStepLengthX = 1;
+	private double packetStepLengthY = 1;
+	private double packetStepLengthZ = 1;
 	private double velRail = 1.0; 
 	private double probDRail = 0.0;
 	private boolean batchRun; // store single result (last simulation step used) in batch file, append to file if already there.
 	private boolean isWait;
 	private boolean isAdjust;
+	private boolean isFEC = false;
 	
 	private static final int ARQ_CODE_LENGTH = 2;
 	// movement defaults to be used if movement type not specified in the params file.
@@ -147,6 +151,15 @@ public class SimulationParams {
 			else if(line.startsWith("stepLengthZ")){
 				molRandMoveZ = Double.parseDouble(param);
 			}
+			else if(line.startsWith("packetStepLengthX")){
+				packetStepLengthX = Double.parseDouble(param);
+			}
+			else if(line.startsWith("packetStepLengthY")){
+				packetStepLengthY = Double.parseDouble(param);
+			}
+			else if(line.startsWith("packetStepLengthZ")){
+				packetStepLengthZ = Double.parseDouble(param);
+			}
 			else if(line.startsWith("mediumDimensionX")){
 				mediumLength = Integer.parseInt(param);
 			}
@@ -180,9 +193,9 @@ public class SimulationParams {
 			else if(line.startsWith("numMessages")){
 				numMessages = Integer.parseInt(param);				
 			}
-			else if(line.startsWith("numRequiredPackets")){
-				numRequiredPackets = Integer.parseInt(param);
-			}
+//			else if(line.startsWith("numRequiredPackets")){
+//				numRequiredPackets = Integer.parseInt(param);
+//			}
 			else if(line.startsWith("numRetransmissions")){
 				numRetransmissions = Integer.parseInt(param);				
 			}
@@ -211,7 +224,12 @@ public class SimulationParams {
 				fecParams = new FECParams(
 						new Scanner(
 						line.substring(line.indexOf(" "))));
-			} else if (line.startsWith("moleculeParams")) {
+				numRequiredPackets = fecParams.getNumRequiredPacket();
+				if(fecParams.getFECMethod() == FECMethodType.PARITYCHECK) {
+					isFEC = true;
+				}
+			}
+			else if (line.startsWith("moleculeParams")) {
 				MoleculeParams molParam = new MoleculeParams(new Scanner(line.substring(line.indexOf(" "))));
 				if(molParam.getAdaptiveChange() == 0) {
 					if(molParam.getMoleculeType() != MoleculeType.NOISE) {
@@ -219,12 +237,14 @@ public class SimulationParams {
 					}
 				}
 				moleculeParams.add(molParam);
-			} else if(line.startsWith("microtubuleParams")) {
+			}
+			else if(line.startsWith("microtubuleParams")) {
 				microtubuleParams.add(
 						new MicrotubuleParams(
 								new Scanner(
 										line.substring(line.indexOf(" ")))));
-			} else if(line.startsWith("outputFile") && !(param.equals("Off"))) {
+			}
+			else if(line.startsWith("outputFile") && !(param.equals("Off"))) {
 				outputFileName = param;
 			}
 		}
@@ -360,6 +380,18 @@ public class SimulationParams {
 	public double getMolRandMoveZ() {
 		return molRandMoveZ;
 	}
+	
+	public double getPacketStepLengthX() {
+		return packetStepLengthX;
+	}
+
+	public double getPacketStepLengthY() {
+		return packetStepLengthY;
+	}
+
+	public double getPacketStepLengthZ() {
+		return packetStepLengthZ;
+	}
 
 	public double getVelRail() {
 		return velRail;
@@ -396,5 +428,8 @@ public class SimulationParams {
 	public boolean isAdjust() {
 		return isAdjust;
 	}
-
+	
+	public boolean isFEC() {
+		return isFEC;
+	}
 }
