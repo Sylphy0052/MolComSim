@@ -385,12 +385,15 @@ public class NanoMachine {
 			if(m.getMsgId() == currMsgId + 1){
 //				currMsgId++;		
 //				lastCommunicationStatus = LAST_COMMUNICATION_SUCCESS;
-				numRecievedPackets++;
-				simulation.recievedMessage(currMsgId, numRecievedPackets);
+//				numRecievedPackets++;
+				simulation.recievedMessage(currMsgId, m.getNumSequence());
+//				if((simulation.assembling() && FEC.canDecode()) || 
+//						(!simulation.assembling() && numRecievedPackets >= numRequiredPackets)) {
 				if((simulation.assembling() && FEC.canDecode()) || 
-						(!simulation.assembling() && numRecievedPackets >= numRequiredPackets)) {
+						(!simulation.assembling())) {
 					currMsgId++;
 					lastCommunicationStatus = LAST_COMMUNICATION_SUCCESS;
+					simulation.addStepByMessage();
 					
 					if(simulation.isUsingAcknowledgements()) {
 						createMoleculesDelayed = true;

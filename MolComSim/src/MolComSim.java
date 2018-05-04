@@ -17,6 +17,8 @@ public class MolComSim {
 	private ArrayList<NanoMachine> transmitters;
 	private ArrayList<NanoMachine> receivers;
 	private ArrayList<Molecule> movingMolecules; 
+	
+	private ArrayList<Integer> stepByMessage;
 
 	//The medium in which the simulation takes place
 	private Medium medium;
@@ -134,6 +136,8 @@ public class MolComSim {
 		collisionII = new ArrayList<Integer>();
 		collisionIN = new ArrayList<Integer>();
 		collisions = new ArrayList<Integer>();
+		
+		stepByMessage = new ArrayList<Integer>();
 	}
 
 	/** Makes sure there is only one instance of MolComSim
@@ -201,6 +205,10 @@ public class MolComSim {
 	
 	public void addAckTime(int addTime) {
 		this.allAckTime += addTime;
+	}
+	
+	public void addStepByMessage() {
+		this.stepByMessage.add(this.simStep);
 	}
 
 	public boolean isLastMsgCompleted() {
@@ -357,6 +365,9 @@ public class MolComSim {
 			if(simParams.isWait()) {
 				printBatchWait();
 			}
+			if(simParams.getNumMessages() != 1) {
+				printRTTByMessage();
+			}
 			
 			FileWriter batchWriter = new FileWriter("batch_" + simParams.getOutputFileName(), APPEND_TO_FILE);
 			if(batchWriter != null) {
@@ -371,6 +382,18 @@ public class MolComSim {
 		}
 	}
 	
+	public void printRTTByMessage() throws IOException {
+		FileWriter batchWriter = new FileWriter("message_batch_" + simParams.getOutputFileName(), APPEND_TO_FILE);
+		if(batchWriter != null) {
+			batchWriter.append(String.valueOf(this.stepByMessage.get(0)));
+			for(int i = 1; i < this.stepByMessage.size(); i++) {
+				batchWriter.append("," + String.valueOf(this.stepByMessage.get(i)));
+			}
+			batchWriter.append("\n");
+		}
+		batchWriter.close();
+	}
+	
 	public void printBatchWait() throws IOException {
 		FileWriter batchWriter = new FileWriter("ptime_batch_" + simParams.getOutputFileName(), APPEND_TO_FILE);
 		if(batchWriter != null) {
@@ -381,21 +404,36 @@ public class MolComSim {
 	
 	public void printBatchCollision() throws IOException {
 		FileWriter batchWriter = new FileWriter("collision_batch_" + simParams.getOutputFileName(), APPEND_TO_FILE);
+//		if(batchWriter != null) {
+//			ArrayList<Integer> collisionNum = calcCollisionNum();
+//			int count = 0;
+//			for(int i: collisionNum) {
+//				count += i;
+//			}
+//			String str = String.valueOf(count);
+//			batchWriter.append(str + "\n");
+//		}
+//		batchWriter.close();
 		if(batchWriter != null) {
 			ArrayList<Integer> collisionNum = calcCollisionNum();
 			if(simParams.isUsingCollisions()) {
-				String str = String.valueOf(collisions.get(0));
-				for(int i = 1; i < collisions.size(); i++) {
-					str += "/" + String.valueOf(collisions.get(i));
+				if(collisions.size() == 0) {
+					String str = "0,0/0/0/0/0";
+					batchWriter.append(str + "\n");
+				} else {
+					String str = String.valueOf(collisions.get(0));
+					for(int i = 1; i < collisions.size(); i++) {
+						str += "/" + String.valueOf(collisions.get(i));
+					}
+					str += "," + String.valueOf(collisionNum.get(0));
+					for(int i = 1; i < collisionNum.size(); i++) {
+						str += "/" + String.valueOf(collisionNum.get(i));
+					}
+					if(simParams.isDecomposing()) {
+						str += "," + String.valueOf(decomposingNum);
+					}
+					batchWriter.append(str + "\n");
 				}
-				str += "," + String.valueOf(collisionNum.get(0));
-				for(int i = 1; i < collisionNum.size(); i++) {
-					str += "/" + String.valueOf(collisionNum.get(i));
-				}
-				if(simParams.isDecomposing()) {
-					str += "," + String.valueOf(decomposingNum);
-				}
-				batchWriter.append(str + "\n");
 			}
 			batchWriter.close();
 		}
@@ -545,7 +583,7 @@ public class MolComSim {
 		String recievedMessage = "Received message: " + (msgId + 1) + "-" +
 					numRecievedPackets + ", at step: " + simStep + "\n";
 		if(!simParams.isBatchRun()) { 
-//			System.out.print(recievedMessage);
+			System.out.print(recievedMessage);
 		}
 		if((outputFile != null)  && (!simParams.isBatchRun())) {
 //			try {
