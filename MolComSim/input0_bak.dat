@@ -25,8 +25,8 @@ stepLengthY 1.0
 stepLengthZ 1.0
 
 ***Molecule Params
-moleculeParams 100 INFO PASSIVE 0 1.36
-moleculeParams 100 ACK PASSIVE 0 1.36
+moleculeParams 1 INFO PASSIVE 0 1.36
+moleculeParams 1 ACK PASSIVE 0 1.36
 moleculeParams 0 NOISE 0
 
 ***Decomposing Type
@@ -39,14 +39,7 @@ useCollisions 1
 useAcknowledgements 1
 
 ***From FEC or not
-assembling 1
-FEC PARITYCHECK 10 0
-
-***FEC Setting
-packetStepLengthX 1.9883991107985854
-packetStepLengthY 1.9883991107985854
-packetStepLengthZ 1.9883991107985854
-packetDiameter 0.3439788877404252
+assembling 0
 
 ***Output File Name
-outputFile TxRx30_ARQ100-100_PASSIVE-PASSIVE_RTO2_DC05_1messages_FEC10-0.txt
+outputFile TxRx30_ARQ1-1_PASSIVE-PASSIVE_RTO2_DC05_1messages.txt

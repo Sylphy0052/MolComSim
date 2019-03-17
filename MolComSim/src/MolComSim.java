@@ -165,6 +165,7 @@ public class MolComSim {
 		// ToDo: 情報分子と確認応答分子が全てなくなるまで実行
 //		for(; (simStep < simParams.getMaxNumSteps()) && (!lastMsgCompleted) && (!movingMolecules.isEmpty()); simStep++) 
 		for(; (!isFinish) || (movingMolecules.size() != 0); simStep++) {
+			System.out.println(simStep);
 			if ((simStep >= simParams.getMaxNumSteps() || lastMsgCompleted) && !isFinish) {
 				finishSimStep = simStep;
 				isFinish = true;
@@ -335,8 +336,8 @@ public class MolComSim {
 		}
 		
 		if(!simParams.isBatchRun()) {
-			System.out.print(endMessage);
-			System.out.println("decomposing Num: " + decomposingNum);
+//			System.out.print(endMessage);
+//			System.out.println("decomposing Num: " + decomposingNum);
 //			if(simParams.isAdjust()) {
 //				printNumMolecules();
 //			}
